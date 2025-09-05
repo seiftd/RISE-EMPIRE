@@ -1,0 +1,54 @@
+{
+  "title": "Discipline Over Motivation",
+  "script": [
+    "Discipline is the bridge between goals and accomplishment.",
+    "While others sleep, you grind. While others quit, you persist.",
+    "Every morning you have two choices: continue to sleep with your dreams or wake up and chase them.",
+    "The pain of discipline weighs ounces, but the pain of regret weighs tons.",
+    "Champions aren't made in comfort zones. They're forged in the fire of daily discipline.",
+    "Your future self is counting on the discipline you show today."
+  ],
+  "imagePrompts": [
+    "Cinematic sunrise over mountains, golden hour lighting, 8K ultra-realistic, motivational atmosphere",
+    "Athlete training in gym, dramatic lighting, sweat and determination, high contrast, 8K",
+    "Silhouette of person running on beach at sunset, inspirational mood, cinematic composition",
+    "Hands breaking chains, symbolic freedom, dramatic lighting, 8K detailed, powerful imagery",
+    "Person climbing mountain peak, victory pose, epic landscape, golden hour, 8K realistic",
+    "Close-up of determined eyes, intense gaze, cinematic lighting, motivational portrait, 8K"
+  ],
+  "musicPrompt": "Epic cinematic background music, piano + orchestral strings + powerful drums, motivational build-up, climax at 30-40 seconds, emotional and inspiring, 120 BPM, professional quality",
+  "seoTags": [
+    "#Discipline",
+    "#Motivation",
+    "#Inspiration",
+    "#Success",
+    "#Mindset",
+    "#Hustle",
+    "#Greatness",
+    "#RiseEmpire",
+    "#Motivational",
+    "#SelfImprovement",
+    "#Consistency",
+    "#Habits",
+    "#Routine",
+    "#Commitment",
+    "#SelfControl"
+  ],
+  "voiceSettings": {
+    "gender": "male",
+    "tone": "deep",
+    "pace": "8 seconds per sentence with 0.5s pause",
+    "accent": "American English",
+    "emphasis": "Key motivational words",
+    "style": "deep male voice, inspiring and powerful delivery"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "productionNotes": {
+    "duration": "40-50 seconds",
+    "format": "Vertical (1080x1920)",
+    "platforms": ["YouTube Shorts", "TikTok", "Instagram Reels"],
+    "voiceAgent": "agent_6701k4ddqqjkf48r526gs3v001ck",
+    "imageGenerator": "DALL-E 3 or Midjourney recommended",
+    "musicSource": "Epidemic Sound or similar cinematic music library"
+  }
+}

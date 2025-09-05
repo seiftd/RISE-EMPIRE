@@ -1,0 +1,8 @@
+// Rise Empire API Configuration
+module.exports = {
+    GOOGLE_AI_API_KEY: 'AIzaSyCQqVPdDJrf46Ir8DKfGfhf8xiEZswge5E',
+    ELEVENLABS_API_KEY: 'e75fc12c2c26bb27aced1215569a7b7cb9a2c86b8bf5994c0cac304f63f9a974',
+    ELEVENLABS_AGENT_ID: 'agent_6701k4ddqqjkf48r526gs3v001ck',
+    MUSIC_API_KEY: '51a991bb8d1084122d61e58497e83c8d',
+    FIREBASE_API_KEY: 'AIzaSyDjkUUBr2CCxCw0SNXh-JBAebKQZuNpEVo'
+};

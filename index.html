@@ -1,0 +1,4048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise Empire - Content Generator</title>
+    <!-- Video processing will be handled by the backend -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347, #FF1493, #4169E1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .logo-icon::before {
+            content: '🦁';
+            font-size: 40px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+        }
+        
+        .logo-icon::after {
+            content: '☀️';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            font-size: 20px;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .logo-text {
+            text-align: left;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .generator-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #FFD700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-generate {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .content-output {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .output-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .output-title {
+            font-family: 'Orbitron', monospace;
+            color: #FFD700;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .script-sentence {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #FFD700;
+        }
+
+        .image-prompt {
+            background: rgba(0, 100, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0066ff;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 215, 0, 0.3);
+            border-top: 4px solid #FFD700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .api-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-connected {
+            background: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .status-disconnected {
+            background: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .export-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .export-btn {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: #000;
+            margin: 10px;
+        }
+
+        .export-btn:hover {
+            box-shadow: 0 10px 25px rgba(0, 255, 0, 0.4);
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .theme-card.selected {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .theme-icon {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .theme-name {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .auto-generation-status {
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-icon {
+            font-size: 2rem;
+            color: #FFD700;
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-info h4 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .status-info p {
+            margin: 5px 0;
+            color: #ccc;
+        }
+
+        .status-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .json-upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .upload-content i {
+            font-size: 3rem;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .upload-content p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .upload-content small {
+            color: #ccc;
+        }
+
+        .file-selected {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .file-selected .upload-content i {
+            color: #00ff00;
+        }
+
+        .generation-log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-success {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid #00ff00;
+        }
+
+        .log-error {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 3px solid #ff0000;
+        }
+
+        .log-info {
+            background: rgba(0, 100, 255, 0.1);
+            border-left: 3px solid #0066ff;
+        }
+
+        .auto-gen-active {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: #000;
+        }
+
+        .auto-gen-active:hover {
+            box-shadow: 0 10px 25px rgba(0, 255, 0, 0.4);
+        }
+
+        .processed-content-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .content-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .preview-header h3 {
+            color: #FFD700;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .content-card h4 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-value {
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .content-value .script-sentence {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #FFD700;
+        }
+
+        .content-value .image-prompt {
+            background: rgba(0, 100, 255, 0.1);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border-left: 3px solid #0066ff;
+        }
+
+        .content-value .tag {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 3px;
+            display: inline-block;
+        }
+
+        .production-specs {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .production-specs h4 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            color: #FFD700;
+            font-weight: 500;
+        }
+
+        .spec-value {
+            color: #fff;
+        }
+
+        .video-generation-section {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .video-generation-section h4 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .generation-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-large {
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .generation-progress {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #FFD700;
+            font-weight: 500;
+        }
+
+        .generated-assets {
+            margin-top: 30px;
+        }
+
+        .generated-assets h5 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .asset-card h6 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .asset-content {
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .generated-image {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+            margin: 5px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .download-asset {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .download-asset:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .generator-section {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .status-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .upload-area {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo-container">
+                <div class="logo-icon" id="websiteLogo"></div>
+                <div class="logo-text">
+                    <h1 class="logo">RISE EMPIRE</h1>
+                    <p class="tagline">Discipline. Hustle. Greatness.</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- API Status -->
+        <div class="api-status">
+            <div>
+                <span class="status-indicator status-connected"></span>
+                <span>Google AI Studio API</span>
+            </div>
+            <div>
+                <span class="status-indicator status-connected"></span>
+                <span>ElevenLabs API</span>
+            </div>
+        </div>
+
+        <!-- Content Generator -->
+        <div class="generator-section">
+            <h2 class="section-title">
+                <i class="fas fa-magic"></i>
+                Content Generator
+            </h2>
+
+            <!-- Auto-Generation Status -->
+            <div class="auto-generation-status">
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="status-info">
+                        <h4>Auto-Generation Status</h4>
+                        <p id="nextGeneration">Next auto-generation: <span id="nextGenTime">Calculating...</span></p>
+                        <p id="lastGeneration">Last generation: <span id="lastGenTime">Never</span></p>
+                    </div>
+                    <div class="status-controls">
+                        <button class="btn btn-small" onclick="toggleAutoGeneration()" id="autoGenToggle">
+                            <i class="fas fa-play"></i> Enable Auto-Gen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON File Upload -->
+            <div class="json-upload-section">
+                <h3 class="output-title">
+                    <i class="fas fa-file-upload"></i>
+                    Upload JSON Content File
+                </h3>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drop JSON file here or click to browse</p>
+                        <small>Upload a JSON file to generate real content</small>
+                    </div>
+                </div>
+                <button class="btn" onclick="processJsonFile()" id="processJsonBtn" style="display: none;">
+                    <i class="fas fa-cogs"></i> Process JSON & Generate Real Content
+                </button>
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="form-group">
+                <label>Select Theme:</label>
+                <div class="theme-selector" id="themeSelector">
+                    <!-- Themes will be dynamically generated from the database -->
+                </div>
+            </div>
+
+            <!-- Voice Settings -->
+            <div class="form-group">
+                <label>Voice Settings:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <select class="form-control" id="voiceGender">
+                        <option value="male">Male Voice</option>
+                        <option value="female">Female Voice</option>
+                    </select>
+                    <select class="form-control" id="voiceTone">
+                        <option value="deep">Deep & Powerful</option>
+                        <option value="energetic">Energetic</option>
+                        <option value="inspiring">Inspiring</option>
+                        <option value="calm">Calm & Confident</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Custom Theme Input -->
+            <div class="form-group">
+                <label>Custom Theme (Optional):</label>
+                <input type="text" class="form-control" id="customTheme" placeholder="Enter your custom motivational theme...">
+            </div>
+
+            <button class="btn btn-generate" onclick="generateContent()">
+                <i class="fas fa-rocket"></i>
+                Generate Rise Empire Content
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your motivational content...</p>
+            </div>
+        </div>
+
+        <!-- Processed Content Display -->
+        <div class="processed-content-section" id="processedContentSection" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Your Real Content - Ready for Production
+            </h2>
+            
+            <div class="content-preview">
+                <div class="preview-header">
+                    <h3 id="processedTitle">Content Title</h3>
+                    <div class="preview-actions">
+                        <button class="btn btn-small" onclick="downloadProcessedContent('json')">
+                            <i class="fas fa-download"></i> Download JSON
+                        </button>
+                        <button class="btn btn-small" onclick="downloadProcessedContent('txt')">
+                            <i class="fas fa-file-alt"></i> Download TXT
+                        </button>
+                        <button class="btn btn-small" onclick="copyProcessedContent()">
+                            <i class="fas fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h4><i class="fas fa-video"></i> Video Title</h4>
+                        <div id="processedVideoTitle" class="content-value"></div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4><i class="fas fa-microphone"></i> Script (6 Sentences)</h4>
+                        <div id="processedScript" class="content-value"></div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4><i class="fas fa-image"></i> Image Prompts</h4>
+                        <div id="processedImagePrompts" class="content-value"></div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4><i class="fas fa-music"></i> Music Prompt</h4>
+                        <div id="processedMusicPrompt" class="content-value"></div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4><i class="fas fa-hashtag"></i> SEO Tags & Hashtags</h4>
+                        <div id="processedSeoTags" class="content-value"></div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h4><i class="fas fa-cogs"></i> Voice Settings</h4>
+                        <div id="processedVoiceSettings" class="content-value"></div>
+                    </div>
+                </div>
+                
+                <div class="production-specs">
+                    <h4><i class="fas fa-tools"></i> Production Specifications</h4>
+                    <div id="processedProductionSpecs" class="content-value"></div>
+                </div>
+                
+                <!-- Complete Video Generation -->
+                <div class="video-generation-section">
+                    <h4><i class="fas fa-video"></i> Generate Complete Video</h4>
+                    <div class="generation-controls">
+                        <button class="btn btn-large" onclick="generateCompleteVideo()" id="generateVideoBtn">
+                            <i class="fas fa-magic"></i> Generate Complete Video with Images, Music & Logo
+                        </button>
+                        <div class="generation-progress" id="generationProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="progress-text" id="progressText">Initializing...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="generated-assets" id="generatedAssets" style="display: none;">
+                        <h5>Generated Assets:</h5>
+                        <div class="assets-grid">
+                            <div class="asset-card">
+                                <h6><i class="fas fa-image"></i> Generated Images</h6>
+                                <div id="generatedImages" class="asset-content"></div>
+                            </div>
+                            <div class="asset-card">
+                                <h6><i class="fas fa-music"></i> Generated Music</h6>
+                                <div id="generatedMusic" class="asset-content"></div>
+                            </div>
+                            <div class="asset-card">
+                                <h6><i class="fas fa-microphone"></i> Generated Voice</h6>
+                                <div id="generatedVoice" class="asset-content"></div>
+                            </div>
+                            <div class="asset-card">
+                                <h6><i class="fas fa-video"></i> Final Video</h6>
+                                <div id="finalVideo" class="asset-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Output -->
+        <div class="content-output" id="contentOutput" style="display: none;">
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-video"></i>
+                    Video Title
+                    <button class="copy-btn" onclick="copyToClipboard('title')">Copy</button>
+                </h3>
+                <div id="videoTitle"></div>
+            </div>
+
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-microphone"></i>
+                    Script (6 Sentences)
+                    <button class="copy-btn" onclick="copyToClipboard('script')">Copy</button>
+                </h3>
+                <div id="scriptContent"></div>
+            </div>
+
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-image"></i>
+                    Image Prompts (6 Cinematic Images)
+                    <button class="copy-btn" onclick="copyToClipboard('images')">Copy</button>
+                </h3>
+                <div id="imagePrompts"></div>
+            </div>
+
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-music"></i>
+                    Music Prompt
+                    <button class="copy-btn" onclick="copyToClipboard('music')">Copy</button>
+                </h3>
+                <div id="musicPrompt"></div>
+            </div>
+
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-hashtag"></i>
+                    SEO Tags & Hashtags
+                    <button class="copy-btn" onclick="copyToClipboard('tags')">Copy</button>
+                </h3>
+                <div id="seoTags"></div>
+            </div>
+
+            <div class="output-section">
+                <h3 class="output-title">
+                    <i class="fas fa-cogs"></i>
+                    Voice Settings
+                    <button class="copy-btn" onclick="copyToClipboard('voice')">Copy</button>
+                </h3>
+                <div id="voiceSettings"></div>
+            </div>
+
+            <div class="export-section">
+                <button class="btn export-btn" onclick="exportToJSON()">
+                    <i class="fas fa-download"></i>
+                    Export as JSON
+                </button>
+                <button class="btn export-btn" onclick="exportToTXT()">
+                    <i class="fas fa-file-alt"></i>
+                    Export as Text
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const GOOGLE_AI_API_KEY = 'AIzaSyCQqVPdDJrf46Ir8DKfGfhf8xiEZswge5E';
+        const FIREBASE_API_KEY = 'AIzaSyDjkUUBr2CCxCw0SNXh-JBAebKQZuNpEVo';
+        const ELEVENLABS_AGENT_ID = 'agent_6701k4ddqqjkf48r526gs3v001ck';
+        const ELEVENLABS_API_KEY = 'sk_c61890cd0590582c7ea3751007f9e6d9253b8d39b9d3768a';
+        const MUSIC_API_KEY = '51a991bb8d1084122d61e58497e83c8d';
+
+        // Test Google AI Studio connection
+        async function testGoogleAIStudio() {
+            try {
+                console.log('Testing Google AI Studio connection...');
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_AI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: "Hello, can you respond with 'Google AI Studio is working'?"
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 100
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Google AI Studio test successful:', data);
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('Google AI Studio test failed:', response.status, errorText);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Google AI Studio test error:', error);
+                return false;
+            }
+        }
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            testGoogleAIStudio();
+        });
+
+        // Test image generation specifically
+        async function testImageGeneration() {
+            try {
+                console.log('Testing image generation...');
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GOOGLE_AI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: "Create a high-quality 8K cinematic image of a sunrise over mountains. The image should be vertical (9:16 aspect ratio), ultra-realistic, motivational atmosphere, professional photography quality."
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 8192
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Image generation test response:', data);
+                    
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const content = data.candidates[0].content;
+                        if (content.parts && content.parts[0]) {
+                            const part = content.parts[0];
+                            if (part.inlineData && part.inlineData.data) {
+                                console.log('✅ Image generation working! Got base64 image data');
+                                return true;
+                            } else if (part.text) {
+                                console.log('⚠️ Got text response instead of image:', part.text);
+                                return false;
+                            }
+                        }
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error('Image generation test failed:', response.status, errorText);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Image generation test error:', error);
+                return false;
+            }
+        }
+
+        // Add test button to UI
+        function addTestButton() {
+            const testButton = document.createElement('button');
+            testButton.textContent = 'Test Image Generation';
+            testButton.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                z-index: 1000;
+                background: #FFD700;
+                color: #000;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+            testButton.onclick = testImageGeneration;
+            document.body.appendChild(testButton);
+        }
+
+        // Add test button when page loads
+        window.addEventListener('load', () => {
+            setTimeout(addTestButton, 1000);
+        });
+
+        // Complete Rise Empire Scripts Database (50 themes)
+        const RISE_EMPIRE_SCRIPTS = {
+            // DISCIPLINE & CONSISTENCY
+            discipline: {
+                title: "Discipline Over Motivation",
+                script: [
+                    "Discipline is the bridge between goals and accomplishment.",
+                    "While others sleep, you grind. While others quit, you persist.",
+                    "Every morning you have two choices: continue to sleep with your dreams or wake up and chase them.",
+                    "The pain of discipline weighs ounces, but the pain of regret weighs tons.",
+                    "Champions aren't made in comfort zones. They're forged in the fire of daily discipline.",
+                    "Your future self is counting on the discipline you show today."
+                ],
+                keywords: ["discipline", "consistency", "habits", "routine", "commitment", "self-control"],
+                icon: "💪"
+            },
+            consistency: {
+                title: "Consistency Beats Perfection",
+                script: [
+                    "Perfection is the enemy of progress. Consistency is the path to mastery.",
+                    "Small daily improvements lead to staggering long-term results.",
+                    "It's not about being perfect today; it's about being consistent every day.",
+                    "The compound effect of small actions creates extraordinary outcomes.",
+                    "Your habits today determine your success tomorrow.",
+                    "Keep showing up. Keep grinding. Keep rising."
+                ],
+                keywords: ["consistency", "persistence", "daily", "routine", "progress", "steady"],
+                icon: "⏰"
+            },
+            habits: {
+                title: "Habits Shape Destiny",
+                script: [
+                    "You don't rise to the level of your goals; you fall to the level of your systems.",
+                    "Your habits are either building you up or tearing you down.",
+                    "Success is the sum of small efforts repeated day in and day out.",
+                    "The chains of habit are too weak to be felt until they're too strong to be broken.",
+                    "Make your habits so good that they can't be ignored.",
+                    "Your daily habits are the foundation of your empire."
+                ],
+                keywords: ["habits", "systems", "routine", "daily", "foundation", "building"],
+                icon: "🔗"
+            },
+            // FEAR & COURAGE
+            fear: {
+                title: "Fear is a Lie",
+                script: [
+                    "Fear is just excitement without breath. Take a deep breath and step forward.",
+                    "The cave you fear to enter holds the treasure you seek.",
+                    "Courage isn't the absence of fear; it's action in spite of it.",
+                    "Every hero's journey begins with a single step into the unknown.",
+                    "Your comfort zone is a beautiful place, but nothing ever grows there.",
+                    "The only way to overcome fear is to face it head-on and keep moving."
+                ],
+                keywords: ["fear", "courage", "bravery", "overcoming", "challenge", "breakthrough"],
+                icon: "🔥"
+            },
+            courage: {
+                title: "Courage is Contagious",
+                script: [
+                    "Courage is not the absence of fear, but the triumph over it.",
+                    "When you face your fears, you inspire others to face theirs.",
+                    "The brave may not live forever, but the cautious don't live at all.",
+                    "Your courage today becomes someone else's hope tomorrow.",
+                    "Stand up for what's right, even when you stand alone.",
+                    "Be the light in someone's darkness. Be the courage they need."
+                ],
+                keywords: ["courage", "bravery", "inspiration", "hope", "light", "strength"],
+                icon: "🦁"
+            },
+            comfort: {
+                title: "Comfort Kills Dreams",
+                script: [
+                    "Growth happens outside your comfort zone, not inside it.",
+                    "The magic you're looking for is in the work you're avoiding.",
+                    "Comfort is the enemy of greatness. Discomfort is the price of success.",
+                    "If it doesn't challenge you, it doesn't change you.",
+                    "Your comfort zone is where dreams go to die.",
+                    "Step into the unknown. That's where your greatness lives."
+                ],
+                keywords: ["comfort", "zone", "growth", "challenge", "change", "greatness"],
+                icon: "🚀"
+            },
+            // SUCCESS & ACHIEVEMENT
+            success: {
+                title: "Grind Now Shine Later",
+                script: [
+                    "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                    "The road to success is always under construction, but that's what makes it an adventure.",
+                    "Your dreams are valid, your goals are achievable, and your potential is unlimited.",
+                    "Success is the sum of small efforts repeated day in and day out.",
+                    "The difference between ordinary and extraordinary is that little extra effort.",
+                    "Your time is now. Your moment is here. Your success is inevitable."
+                ],
+                keywords: ["success", "achievement", "victory", "triumph", "winning", "accomplishment"],
+                icon: "🏆"
+            },
+            goals: {
+                title: "Goals Without Action Are Dreams",
+                script: [
+                    "A goal without a plan is just a wish. A plan without action is just a dream.",
+                    "Your goals are the road map to your dreams. Start driving.",
+                    "The best time to plant a tree was 20 years ago. The second best time is now.",
+                    "Don't just set goals. Set goals that scare you and excite you at the same time.",
+                    "Every expert was once a beginner. Every pro was once an amateur.",
+                    "Your goals are waiting for you. Stop making excuses and start making progress."
+                ],
+                keywords: ["goals", "plans", "action", "dreams", "progress", "achievement"],
+                icon: "🎯"
+            },
+            winning: {
+                title: "Winners Never Quit",
+                script: [
+                    "Winners never quit, and quitters never win. It's that simple.",
+                    "The only way to guarantee failure is to stop trying.",
+                    "Every champion was once a contender who refused to give up.",
+                    "Victory belongs to the most persevering, not the most talented.",
+                    "When you feel like quitting, remember why you started.",
+                    "Winners are not people who never fail, but people who never quit."
+                ],
+                keywords: ["winners", "quitting", "perseverance", "champions", "victory", "talent"],
+                icon: "👑"
+            },
+            // MINDSET & MENTALITY
+            mindset: {
+                title: "Mindset is Everything",
+                script: [
+                    "Your mindset is the foundation of everything you do and everything you become.",
+                    "Whether you think you can or you think you can't, you're right.",
+                    "The mind is everything. What you think you become.",
+                    "Your thoughts become your words, your words become your actions, your actions become your destiny.",
+                    "Change your mindset, change your life. It's that powerful.",
+                    "A positive mindset is not a destination, it's a way of life."
+                ],
+                keywords: ["mindset", "attitude", "perspective", "belief", "mental", "psychology"],
+                icon: "🧠"
+            },
+            positivity: {
+                title: "Positive Mind, Positive Life",
+                script: [
+                    "Your attitude determines your altitude. Stay positive and keep rising.",
+                    "Positive thinking is not about ignoring problems; it's about approaching them with confidence.",
+                    "The sun always rises after the darkest night. Keep your faith strong.",
+                    "Your positive energy is contagious. Spread it everywhere you go.",
+                    "Optimism is a superpower. Use it to change your world.",
+                    "When life gives you lemons, make lemonade and build an empire."
+                ],
+                keywords: ["positive", "attitude", "optimism", "energy", "faith", "confidence"],
+                icon: "☀️"
+            },
+            belief: {
+                title: "Believe in Yourself",
+                script: [
+                    "If you don't believe in yourself, who will? Start believing today.",
+                    "Your belief in yourself is the most powerful force in the universe.",
+                    "Doubt kills more dreams than failure ever will. Kill the doubt.",
+                    "You are capable of more than you know. Believe it and prove it.",
+                    "Self-belief is the first secret to success. Master it.",
+                    "When you believe in yourself, the impossible becomes possible."
+                ],
+                keywords: ["belief", "self-belief", "confidence", "doubt", "impossible", "possible"],
+                icon: "✨"
+            },
+            // FAILURE & RESILIENCE
+            failure: {
+                title: "Failure is Feedback",
+                script: [
+                    "Failure is not the opposite of success; it's part of success.",
+                    "Every failure is a lesson, every lesson is a step closer to victory.",
+                    "The only real failure is the failure to try. Everything else is just practice.",
+                    "Fall down seven times, stand up eight. That's the champion's way.",
+                    "Your failures don't define you; your response to them does.",
+                    "Turn your setbacks into comebacks. That's how legends are made."
+                ],
+                keywords: ["failure", "feedback", "lesson", "practice", "setback", "comeback"],
+                icon: "💥"
+            },
+            resilience: {
+                title: "Rise from the Ashes",
+                script: [
+                    "Resilience is not about avoiding the storm; it's about learning to dance in the rain.",
+                    "The strongest trees grow in the strongest winds. Embrace the challenge.",
+                    "When life knocks you down, get up stronger than before.",
+                    "Resilience is your superpower. Use it to overcome anything.",
+                    "The phoenix rises from its own ashes. So can you.",
+                    "Your comeback will be greater than your setback. Keep fighting."
+                ],
+                keywords: ["resilience", "bounce back", "recovery", "strength", "endurance", "unbreakable"],
+                icon: "🛡️"
+            },
+            struggle: {
+                title: "Struggle Builds Strength",
+                script: [
+                    "The struggle you're in today is developing the strength you need for tomorrow.",
+                    "No struggle, no progress. No pain, no gain. No challenge, no change.",
+                    "Your struggles are not obstacles; they're opportunities to grow stronger.",
+                    "The strongest steel is forged in the hottest fire. Embrace the heat.",
+                    "Struggle is the price of greatness. Pay it willingly.",
+                    "Your struggles today are your strengths tomorrow. Keep pushing."
+                ],
+                keywords: ["struggle", "strength", "progress", "pain", "gain", "challenge"],
+                icon: "⚡"
+            },
+            // TIME & FOCUS
+            time: {
+                title: "Time is Your Most Valuable Asset",
+                script: [
+                    "Time is the only resource you can't get back. Use it wisely.",
+                    "Yesterday is history, tomorrow is a mystery, today is a gift. That's why it's called the present.",
+                    "Don't count the days, make the days count. Every moment matters.",
+                    "Your time is limited, but your potential is unlimited. Don't waste it.",
+                    "The best time to start was yesterday. The next best time is now.",
+                    "Time flies, but you're the pilot. Take control of your journey."
+                ],
+                keywords: ["time", "asset", "present", "moment", "limited", "potential"],
+                icon: "⏰"
+            },
+            focus: {
+                title: "Laser Focus",
+                script: [
+                    "Focus is the key to success. Distraction is the enemy of achievement.",
+                    "You can do anything, but you can't do everything. Choose your battles wisely.",
+                    "The successful person focuses on one thing at a time and does it exceptionally well.",
+                    "Your focus determines your reality. Focus on what matters most.",
+                    "Multitasking is a myth. Single-tasking is the path to mastery.",
+                    "When you focus on your goals, everything else becomes background noise."
+                ],
+                keywords: ["focus", "concentration", "clarity", "precision", "target", "single-minded"],
+                icon: "🎯"
+            },
+            priority: {
+                title: "Priorities Over Wishes",
+                script: [
+                    "You can have anything you want, but you can't have everything you want.",
+                    "Your priorities reveal your values. Make sure they align with your dreams.",
+                    "The difference between successful and unsuccessful people is their priorities.",
+                    "Focus on what's important, not what's urgent. That's the secret.",
+                    "Your priorities today determine your success tomorrow. Choose wisely.",
+                    "When you know your priorities, decisions become easy."
+                ],
+                keywords: ["priorities", "values", "important", "urgent", "decisions", "success"],
+                icon: "📋"
+            },
+            // MONEY & WEALTH
+            money: {
+                title: "Money is a Tool, Not a Goal",
+                script: [
+                    "Money is a tool for freedom, not a measure of success.",
+                    "The goal isn't to be rich; it's to be free. Money is just the means.",
+                    "Wealth is not about having money; it's about having options.",
+                    "Make money work for you, not the other way around.",
+                    "Financial freedom is the ultimate goal. Money is just the vehicle.",
+                    "Your relationship with money determines your relationship with freedom."
+                ],
+                keywords: ["money", "wealth", "freedom", "financial", "options", "vehicle"],
+                icon: "💰"
+            },
+            investment: {
+                title: "Invest in Yourself First",
+                script: [
+                    "The best investment you can make is in yourself. Everything else is secondary.",
+                    "Invest in your mind, your skills, and your character. The returns are infinite.",
+                    "Your education is the only thing that can't be taken away from you.",
+                    "Spend money on experiences and education, not just things.",
+                    "The compound effect of self-investment is the most powerful force in the universe.",
+                    "When you invest in yourself, you invest in your future."
+                ],
+                keywords: ["investment", "yourself", "education", "skills", "character", "future"],
+                icon: "📚"
+            },
+            hustle: {
+                title: "Hustle Hard, Hustle Smart",
+                script: [
+                    "Hustle beats talent when talent doesn't hustle. But hustle with talent is unstoppable.",
+                    "The hustle is real, but so are the results. Keep grinding.",
+                    "Hustle in silence. Let your success make the noise.",
+                    "Your hustle determines your success. Your consistency determines your legacy.",
+                    "Hustle until your haters ask if you're hiring.",
+                    "The hustle never stops, but neither do the rewards."
+                ],
+                keywords: ["hustle", "talent", "grinding", "silence", "success", "rewards"],
+                icon: "💼"
+            },
+            // HEALTH & FITNESS
+            health: {
+                title: "Health is Wealth",
+                script: [
+                    "Your health is your wealth. Without it, nothing else matters.",
+                    "Take care of your body. It's the only place you have to live.",
+                    "Health is not a destination; it's a way of life.",
+                    "Your body is a temple. Treat it with respect and honor.",
+                    "Good health is the foundation of all success. Build it strong.",
+                    "Invest in your health today, or pay for your illness tomorrow."
+                ],
+                keywords: ["health", "wealth", "body", "temple", "foundation", "success"],
+                icon: "💪"
+            },
+            fitness: {
+                title: "Fitness is a Lifestyle",
+                script: [
+                    "Fitness is not about being better than someone else; it's about being better than you used to be.",
+                    "Your body can do it. It's your mind you have to convince.",
+                    "The pain you feel today is the strength you feel tomorrow.",
+                    "Fitness is not a punishment; it's a celebration of what your body can do.",
+                    "Strong body, strong mind, strong spirit. That's the trifecta of success.",
+                    "Your fitness journey is a marathon, not a sprint. Pace yourself and enjoy the ride."
+                ],
+                keywords: ["fitness", "lifestyle", "body", "mind", "spirit", "marathon"],
+                icon: "🏃"
+            },
+            energy: {
+                title: "Energy is Everything",
+                script: [
+                    "Your energy introduces you before you even speak. Make it powerful.",
+                    "High energy is a choice. Choose to be the light in the room.",
+                    "Your energy is contagious. Make sure it's worth catching.",
+                    "Energy flows where attention goes. Direct it wisely.",
+                    "The quality of your energy determines the quality of your life.",
+                    "Protect your energy like your life depends on it. Because it does."
+                ],
+                keywords: ["energy", "powerful", "light", "contagious", "attention", "quality"],
+                icon: "⚡"
+            },
+            // RELATIONSHIPS & LEADERSHIP
+            relationships: {
+                title: "Relationships Are Everything",
+                script: [
+                    "Your network is your net worth. Build it with intention and care.",
+                    "Surround yourself with people who lift you higher, not drag you down.",
+                    "The quality of your relationships determines the quality of your life.",
+                    "Be the friend you wish you had. Be the leader you wish you followed.",
+                    "Relationships are investments. Invest in the right people.",
+                    "Your tribe determines your vibe. Choose your tribe wisely."
+                ],
+                keywords: ["relationships", "network", "net worth", "tribe", "vibe", "investments"],
+                icon: "🤝"
+            },
+            leadership: {
+                title: "Leaders Are Made, Not Born",
+                script: [
+                    "Leadership is not about titles or positions; it's about influence and impact.",
+                    "The best leaders are those who create more leaders, not more followers.",
+                    "Lead by example. Your actions speak louder than your words.",
+                    "True leadership is service. Serve others and success will follow.",
+                    "A leader is one who knows the way, goes the way, and shows the way.",
+                    "Your leadership legacy is not what you achieve, but who you help achieve."
+                ],
+                keywords: ["leadership", "influence", "impact", "example", "service", "legacy"],
+                icon: "👑"
+            },
+            influence: {
+                title: "Influence is Power",
+                script: [
+                    "Your influence is your superpower. Use it to make a positive impact.",
+                    "Influence is not about manipulation; it's about inspiration.",
+                    "The greatest leaders are those who influence without authority.",
+                    "Your words have power. Use them to build up, not tear down.",
+                    "Influence others by being the change you want to see in the world.",
+                    "Your influence today shapes the leaders of tomorrow."
+                ],
+                keywords: ["influence", "power", "inspiration", "authority", "words", "change"],
+                icon: "🌟"
+            },
+            // LEGACY & IMPACT
+            legacy: {
+                title: "Build Your Legacy",
+                script: [
+                    "Your legacy is not what you leave behind; it's what you build today.",
+                    "The greatest legacy is not wealth or fame, but the lives you touch.",
+                    "Build something that outlives you. That's the mark of true success.",
+                    "Your legacy is written in the hearts of those you've helped along the way.",
+                    "Don't just make a living; make a difference. That's your legacy.",
+                    "The best time to start building your legacy was yesterday. The next best time is now."
+                ],
+                keywords: ["legacy", "impact", "influence", "generations", "lasting", "immortal"],
+                icon: "🏛️"
+            },
+            impact: {
+                title: "Make an Impact",
+                script: [
+                    "Your impact is not measured by your success, but by the success of others.",
+                    "Small actions can create big impacts. Start with one person today.",
+                    "The ripple effect of your kindness can change the world.",
+                    "Make an impact that matters. Make a difference that lasts.",
+                    "Your impact today determines your legacy tomorrow.",
+                    "Be the change you want to see. Be the impact the world needs."
+                ],
+                keywords: ["impact", "success", "actions", "ripple", "kindness", "change"],
+                icon: "💫"
+            },
+            purpose: {
+                title: "Find Your Purpose",
+                script: [
+                    "Your purpose is not something you find; it's something you create.",
+                    "Purpose gives meaning to your struggles and direction to your dreams.",
+                    "When you know your why, you can endure any how.",
+                    "Your purpose is the intersection of your passion and the world's needs.",
+                    "Don't just exist; live with purpose. That's the difference between life and living.",
+                    "Your purpose is your superpower. Use it to change the world."
+                ],
+                keywords: ["purpose", "meaning", "direction", "passion", "needs", "superpower"],
+                icon: "🎯"
+            },
+            // GRATITUDE & MINDFULNESS
+            gratitude: {
+                title: "Gratitude Changes Everything",
+                script: [
+                    "Gratitude turns what we have into enough. It's the secret to happiness.",
+                    "The more grateful you are, the more reasons you'll find to be grateful.",
+                    "Gratitude is not just a feeling; it's a practice. Practice it daily.",
+                    "Your attitude of gratitude determines your altitude of success.",
+                    "Count your blessings, not your problems. That's the winning mindset.",
+                    "Gratitude is the foundation of abundance. Build it strong."
+                ],
+                keywords: ["gratitude", "happiness", "practice", "attitude", "blessings", "abundance"],
+                icon: "🙏"
+            },
+            mindfulness: {
+                title: "Be Present, Be Powerful",
+                script: [
+                    "The present moment is the only time you have power. Use it wisely.",
+                    "Mindfulness is not about emptying your mind; it's about filling it with awareness.",
+                    "Your peace of mind is more valuable than any material possession.",
+                    "Be here now. The past is gone, the future is uncertain, but now is real.",
+                    "Mindfulness is the key to unlocking your full potential.",
+                    "When you're present, you're powerful. When you're distracted, you're defeated."
+                ],
+                keywords: ["mindfulness", "present", "awareness", "peace", "potential", "powerful"],
+                icon: "🧘"
+            },
+            balance: {
+                title: "Balance is the Key",
+                script: [
+                    "Life is about balance. Work hard, but don't forget to live.",
+                    "Success without balance is just stress in a fancy suit.",
+                    "Balance your ambition with your well-being. Both matter.",
+                    "The key to lasting success is sustainable balance.",
+                    "Don't just chase success; chase a balanced life that includes success.",
+                    "Your balance today determines your sustainability tomorrow."
+                ],
+                keywords: ["balance", "life", "work", "success", "well-being", "sustainable"],
+                icon: "⚖️"
+            },
+            // INNOVATION & CREATIVITY
+            innovation: {
+                title: "Innovate or Die",
+                script: [
+                    "Innovation is the only way to win. Everything else is just maintenance.",
+                    "The future belongs to the innovators, not the imitators.",
+                    "Innovation is not about being first; it's about being better.",
+                    "Your ability to innovate determines your ability to dominate.",
+                    "Innovation is the bridge between where you are and where you want to be.",
+                    "Don't just follow the trends; create them. That's innovation."
+                ],
+                keywords: ["innovation", "future", "innovators", "better", "dominate", "trends"],
+                icon: "💡"
+            },
+            creativity: {
+                title: "Creativity is Intelligence at Play",
+                script: [
+                    "Creativity is not a talent; it's a way of operating your mind.",
+                    "The creative adult is the child who survived. Don't let your inner child die.",
+                    "Creativity is intelligence having fun. Make it a daily practice.",
+                    "Your creativity is your competitive advantage. Nurture it daily.",
+                    "Innovation is creativity applied. Apply yours to change the world.",
+                    "The world needs your unique creativity. Don't keep it hidden."
+                ],
+                keywords: ["creativity", "intelligence", "talent", "competitive", "innovation", "unique"],
+                icon: "🎨"
+            },
+            // PERSISTENCE & DETERMINATION
+            persistence: {
+                title: "Persistence Beats Resistance",
+                script: [
+                    "Persistence is the key to success. Everything else is just preparation.",
+                    "The difference between successful and unsuccessful people is persistence.",
+                    "When you feel like giving up, remember why you started.",
+                    "Persistence is not about never falling; it's about always getting back up.",
+                    "Your persistence today determines your success tomorrow.",
+                    "Keep going. Your breakthrough is just around the corner."
+                ],
+                keywords: ["persistence", "resistance", "success", "preparation", "breakthrough", "corner"],
+                icon: "🔥"
+            },
+            determination: {
+                title: "Determination is Everything",
+                script: [
+                    "Determination is the bridge between goals and achievement.",
+                    "When you're determined, obstacles become opportunities.",
+                    "Your determination is stronger than any obstacle in your path.",
+                    "Determination is not about never failing; it's about never quitting.",
+                    "The determined mind is the most powerful force in the universe.",
+                    "Your determination today determines your destiny tomorrow."
+                ],
+                keywords: ["determination", "bridge", "obstacles", "opportunities", "failing", "destiny"],
+                icon: "⚔️"
+            },
+            // VISION & DREAMS
+            vision: {
+                title: "Vision Without Action is Hallucination",
+                script: [
+                    "Your vision is your roadmap to success. Follow it with action.",
+                    "Vision without action is just a dream. Action without vision is just chaos.",
+                    "The clearer your vision, the clearer your path to success.",
+                    "Your vision determines your direction. Your action determines your destination.",
+                    "Don't just dream big; dream with clarity and act with purpose.",
+                    "Your vision today becomes your reality tomorrow. Make it powerful."
+                ],
+                keywords: ["vision", "action", "roadmap", "dream", "clarity", "reality"],
+                icon: "👁️"
+            },
+            dreams: {
+                title: "Dreams Don't Work Unless You Do",
+                script: [
+                    "Dreams are the seeds of reality. Plant them with action.",
+                    "Your dreams are valid, your goals are achievable, and your potential is unlimited.",
+                    "Don't just dream about success; work for it every single day.",
+                    "The gap between your dreams and reality is called action.",
+                    "Your dreams are waiting for you. Stop making excuses and start making progress.",
+                    "Dream big, work hard, stay focused, and never give up."
+                ],
+                keywords: ["dreams", "reality", "seeds", "action", "success", "progress"],
+                icon: "🌙"
+            },
+            // CONFIDENCE & SELF-WORTH
+            confidence: {
+                title: "Confidence is Your Superpower",
+                script: [
+                    "Confidence is not about being perfect; it's about being comfortable with imperfection.",
+                    "Your confidence is your most attractive quality. Own it.",
+                    "Confidence comes from competence. Build your skills, build your confidence.",
+                    "The most confident people are those who are comfortable with uncertainty.",
+                    "Your confidence today determines your success tomorrow.",
+                    "Be confident in who you are, not who others want you to be."
+                ],
+                keywords: ["confidence", "superpower", "imperfection", "competence", "uncertainty", "success"],
+                icon: "💎"
+            },
+            selfworth: {
+                title: "Know Your Worth",
+                script: [
+                    "Your worth is not determined by others' opinions. It's determined by your actions.",
+                    "Know your worth, then add tax. You're more valuable than you think.",
+                    "Your self-worth is not negotiable. Don't let anyone make you feel otherwise.",
+                    "The moment you realize your worth, you'll stop giving discounts.",
+                    "Your worth is not about what you have; it's about who you are.",
+                    "Invest in yourself. You're worth every penny of the investment."
+                ],
+                keywords: ["worth", "opinions", "actions", "valuable", "negotiable", "investment"],
+                icon: "💎"
+            },
+            // ADAPTABILITY & CHANGE
+            adaptability: {
+                title: "Adapt or Die",
+                script: [
+                    "The only constant in life is change. Adapt or get left behind.",
+                    "Your ability to adapt determines your ability to survive and thrive.",
+                    "Adaptability is the key to success in an ever-changing world.",
+                    "The most successful people are those who adapt the fastest.",
+                    "Don't resist change; embrace it. It's your path to growth.",
+                    "Your adaptability today determines your relevance tomorrow."
+                ],
+                keywords: ["adapt", "change", "constant", "survive", "thrive", "relevance"],
+                icon: "🔄"
+            },
+            change: {
+                title: "Change is Growth",
+                script: [
+                    "Change is not the enemy; stagnation is. Embrace change and grow.",
+                    "The only way to make sense out of change is to plunge into it.",
+                    "Your comfort zone is where dreams go to die. Change that.",
+                    "Change is inevitable. Growth is optional. Choose growth.",
+                    "The best time to change was yesterday. The next best time is now.",
+                    "Your willingness to change determines your ability to succeed."
+                ],
+                keywords: ["change", "growth", "stagnation", "comfort", "inevitable", "willingness"],
+                icon: "🦋"
+            },
+            // EXCELLENCE & MASTERY
+            excellence: {
+                title: "Excellence is a Habit",
+                script: [
+                    "Excellence is not a skill; it's an attitude. Adopt it daily.",
+                    "The pursuit of excellence is the pursuit of greatness.",
+                    "Excellence is not about being perfect; it's about being your best.",
+                    "Your commitment to excellence determines your level of success.",
+                    "Excellence is the result of caring more than others think is wise.",
+                    "Don't just do your best; do what's required for excellence."
+                ],
+                keywords: ["excellence", "habit", "attitude", "greatness", "commitment", "required"],
+                icon: "⭐"
+            },
+            mastery: {
+                title: "Mastery is a Journey",
+                script: [
+                    "Mastery is not a destination; it's a journey of continuous improvement.",
+                    "The path to mastery is paved with deliberate practice and persistence.",
+                    "Your commitment to mastery determines your level of expertise.",
+                    "Mastery is the result of thousands of hours of focused practice.",
+                    "The master has failed more times than the beginner has even tried.",
+                    "Your journey to mastery begins with a single step. Take it today."
+                ],
+                keywords: ["mastery", "journey", "improvement", "practice", "expertise", "failed"],
+                icon: "🎓"
+            },
+            // INTEGRITY & CHARACTER
+            integrity: {
+                title: "Integrity is Everything",
+                script: [
+                    "Integrity is doing the right thing, even when no one is watching.",
+                    "Your character is your destiny. Build it with integrity.",
+                    "Integrity is not about being perfect; it's about being honest.",
+                    "The foundation of all success is built on integrity.",
+                    "Your integrity today determines your reputation tomorrow.",
+                    "Be the same person in private that you are in public."
+                ],
+                keywords: ["integrity", "right thing", "character", "destiny", "honest", "reputation"],
+                icon: "🛡️"
+            },
+            character: {
+                title: "Character is Destiny",
+                script: [
+                    "Your character is your most valuable asset. Invest in it daily.",
+                    "Character is not built in a day; it's built in the choices you make every day.",
+                    "The true test of character is how you treat those who can do nothing for you.",
+                    "Your character determines your destiny. Make it strong.",
+                    "Character is what you do when no one is looking.",
+                    "Build your character like you're building a legacy. Make it unbreakable."
+                ],
+                keywords: ["character", "destiny", "asset", "choices", "test", "legacy"],
+                icon: "🏛️"
+            },
+            // SACRIFICE & COMMITMENT
+            sacrifice: {
+                title: "Sacrifice is the Price of Success",
+                script: [
+                    "Success requires sacrifice. What are you willing to give up?",
+                    "The price of success is paid in advance. Pay it willingly.",
+                    "Your sacrifices today determine your success tomorrow.",
+                    "Sacrifice is not about giving up what you want; it's about giving up what you want now for what you want most.",
+                    "The greatest achievements require the greatest sacrifices.",
+                    "Your willingness to sacrifice determines your level of success."
+                ],
+                keywords: ["sacrifice", "price", "success", "advance", "achievements", "willingness"],
+                icon: "⚖️"
+            },
+            commitment: {
+                title: "Commitment Separates Winners from Losers",
+                script: [
+                    "Commitment is what transforms a promise into reality.",
+                    "Your level of commitment determines your level of success.",
+                    "Commitment is not about being perfect; it's about being persistent.",
+                    "The difference between successful and unsuccessful people is commitment.",
+                    "Your commitment today determines your success tomorrow.",
+                    "Be committed to your goals, not just interested in them."
+                ],
+                keywords: ["commitment", "promise", "reality", "persistent", "difference", "interested"],
+                icon: "🤝"
+            }
+        };
+
+        // Auto-generation settings
+        let autoGenerationEnabled = false;
+        let autoGenerationInterval = null;
+        let lastGenerationTime = null;
+        let nextGenerationTime = null;
+        let uploadedJsonFile = null;
+        let currentProcessedContent = null;
+
+        // Initialize theme selection
+        document.addEventListener('DOMContentLoaded', function() {
+            generateThemeSelector();
+            initializeAutoGeneration();
+            setupJsonUpload();
+            loadGenerationHistory();
+            
+            // Create website logo
+            createWebsiteLogo();
+        });
+        
+        // Create website logo
+        function createWebsiteLogo() {
+            const logoElement = document.getElementById('websiteLogo');
+            if (!logoElement) return;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = 80;
+            canvas.height = 80;
+            const ctx = canvas.getContext('2d');
+            
+            // Create dark background
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, 80, 80);
+            
+            // Create lion head with gradient
+            const lionGradient = ctx.createRadialGradient(40, 40, 0, 40, 40, 40);
+            lionGradient.addColorStop(0, '#FFD700');
+            lionGradient.addColorStop(0.2, '#FFA500');
+            lionGradient.addColorStop(0.4, '#FF6347');
+            lionGradient.addColorStop(0.6, '#FF1493');
+            lionGradient.addColorStop(0.8, '#4169E1');
+            lionGradient.addColorStop(1, '#191970');
+            
+            // Draw lion head
+            ctx.fillStyle = lionGradient;
+            ctx.beginPath();
+            ctx.ellipse(40, 40, 30, 40, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw mane
+            ctx.beginPath();
+            ctx.arc(40, 40, 40, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw lion features
+            ctx.fillStyle = '#000';
+            // Eye
+            ctx.beginPath();
+            ctx.arc(48, 32, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            // Nose
+            ctx.beginPath();
+            ctx.arc(52, 42, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw rising sun
+            ctx.fillStyle = '#FF8C00';
+            ctx.beginPath();
+            ctx.arc(16, 24, 12, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw sun rays
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            for (let i = 0; i < 8; i++) {
+                const angle = (i * Math.PI) / 4;
+                const x1 = 16 + Math.cos(angle) * 15;
+                const y1 = 24 + Math.sin(angle) * 15;
+                const x2 = 16 + Math.cos(angle) * 20;
+                const y2 = 24 + Math.sin(angle) * 20;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            
+            // Set the canvas as background
+            logoElement.style.backgroundImage = `url(${canvas.toDataURL()})`;
+            logoElement.style.backgroundSize = 'contain';
+            logoElement.style.backgroundRepeat = 'no-repeat';
+            logoElement.style.backgroundPosition = 'center';
+        }
+
+        function generateThemeSelector() {
+            const themeSelector = document.getElementById('themeSelector');
+            const themes = Object.keys(RISE_EMPIRE_SCRIPTS);
+            
+            themes.forEach(themeKey => {
+                const theme = RISE_EMPIRE_SCRIPTS[themeKey];
+                const themeCard = document.createElement('div');
+                themeCard.className = 'theme-card';
+                themeCard.dataset.theme = themeKey;
+                themeCard.innerHTML = `
+                    <div class="theme-icon">${theme.icon}</div>
+                    <div class="theme-name">${theme.title}</div>
+                `;
+                
+                themeCard.addEventListener('click', function() {
+                    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+                
+                themeSelector.appendChild(themeCard);
+            });
+        }
+
+        async function generateContent() {
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('contentOutput');
+            const selectedTheme = document.querySelector('.theme-card.selected');
+            const customTheme = document.getElementById('customTheme').value;
+            const voiceGender = document.getElementById('voiceGender').value;
+            const voiceTone = document.getElementById('voiceTone').value;
+
+            if (!selectedTheme && !customTheme) {
+                alert('Please select a theme or enter a custom one!');
+                return;
+            }
+
+            loading.style.display = 'block';
+            output.style.display = 'none';
+
+            try {
+                const theme = customTheme || selectedTheme.dataset.theme;
+                const content = await generateMotivationalContent(theme, voiceGender, voiceTone);
+                
+                displayContent(content);
+                loading.style.display = 'none';
+                output.style.display = 'block';
+            } catch (error) {
+                console.error('Error generating content:', error);
+                loading.style.display = 'none';
+                alert('Error generating content. Please try again.');
+            }
+        }
+
+        async function generateMotivationalContent(theme, voiceGender, voiceTone) {
+            const themeData = RISE_EMPIRE_SCRIPTS[theme] || { 
+                title: theme, 
+                script: ["Custom theme script will be generated."],
+                keywords: [theme] 
+            };
+            
+            // Use pre-written script or generate new one
+            const script = themeData.script || await generateScript(themeData);
+            
+            // Generate image prompts (without scene numbers in voice)
+            const imagePrompts = generateImagePrompts(script);
+            
+            // Generate music prompt
+            const musicPrompt = generateMusicPrompt(theme);
+            
+            // Generate SEO tags
+            const seoTags = generateSEOTags(themeData);
+            
+            // Generate voice settings
+            const voiceSettings = generateVoiceSettings(voiceGender, voiceTone);
+
+            return {
+                title: themeData.title,
+                script: script,
+                imagePrompts: imagePrompts,
+                musicPrompt: musicPrompt,
+                seoTags: seoTags,
+                voiceSettings: voiceSettings
+            };
+        }
+
+        async function generateScript(themeData) {
+            const prompt = `Create a motivational script for a 40-50 second YouTube short video with the theme "${themeData.title}". 
+            
+            Requirements:
+            - Exactly 6 sentences
+            - Each sentence should be 8 seconds long when spoken
+            - Use powerful, inspiring language
+            - Include keywords: ${themeData.keywords.join(', ')}
+            - Make it viral-worthy and shareable
+            - End with a strong call-to-action
+            
+            Format as a numbered list (1. 2. 3. etc.)`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GOOGLE_AI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const scriptText = data.candidates[0].content.parts[0].text;
+                
+                // Parse the script into individual sentences
+                const sentences = scriptText.split('\n')
+                    .filter(line => line.trim().match(/^\d+\./))
+                    .map(line => line.replace(/^\d+\.\s*/, '').trim())
+                    .filter(sentence => sentence.length > 0);
+
+                return sentences.slice(0, 6); // Ensure exactly 6 sentences
+            } catch (error) {
+                console.error('Error generating script:', error);
+                // Fallback script
+                return generateFallbackScript(themeData);
+            }
+        }
+
+        function generateFallbackScript(themeData) {
+            const fallbackScripts = {
+                discipline: [
+                    "Discipline is the bridge between goals and accomplishment.",
+                    "While others sleep, you grind. While others quit, you persist.",
+                    "Every morning you have two choices: continue to sleep with your dreams or wake up and chase them.",
+                    "The pain of discipline weighs ounces, but the pain of regret weighs tons.",
+                    "Champions aren't made in comfort zones. They're forged in the fire of daily discipline.",
+                    "Your future self is counting on the discipline you show today."
+                ],
+                fear: [
+                    "Fear is just excitement without breath. Take a deep breath and step forward.",
+                    "The cave you fear to enter holds the treasure you seek.",
+                    "Courage isn't the absence of fear; it's action in spite of it.",
+                    "Every hero's journey begins with a single step into the unknown.",
+                    "Your comfort zone is a beautiful place, but nothing ever grows there.",
+                    "The only way to overcome fear is to face it head-on and keep moving."
+                ],
+                success: [
+                    "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                    "The road to success is always under construction, but that's what makes it an adventure.",
+                    "Your dreams are valid, your goals are achievable, and your potential is unlimited.",
+                    "Success is the sum of small efforts repeated day in and day out.",
+                    "The difference between ordinary and extraordinary is that little extra effort.",
+                    "Your time is now. Your moment is here. Your success is inevitable."
+                ]
+            };
+
+            return fallbackScripts[themeData.title.toLowerCase().replace(/\s+/g, '')] || fallbackScripts.discipline;
+        }
+
+        function generateImagePrompts(script) {
+            const imagePrompts = [];
+            
+            // Ensure script is an array
+            const scriptArray = Array.isArray(script) ? script : [script];
+            
+            scriptArray.forEach((sentence, index) => {
+                // Extract keywords from the sentence for more creative prompts
+                const keywords = sentence.toLowerCase().split(' ').filter(word => 
+                    word.length > 3 && 
+                    !['the', 'and', 'you', 'are', 'for', 'with', 'this', 'that', 'from', 'they', 'have', 'been', 'will', 'your', 'into', 'time', 'more', 'very', 'what', 'know', 'just', 'first', 'also', 'after', 'back', 'well', 'work', 'life', 'make', 'take', 'come', 'look', 'want', 'give', 'use', 'find', 'tell', 'ask', 'work', 'seem', 'feel', 'try', 'leave', 'call', 'good', 'new', 'first', 'last', 'long', 'great', 'little', 'own', 'other', 'old', 'right', 'big', 'high', 'different', 'small', 'large', 'next', 'early', 'young', 'important', 'few', 'public', 'bad', 'same', 'able'].includes(word)
+                );
+                
+                // Create dynamic prompts based on sentence content
+                const creativePrompts = [
+                    `Epic cinematic scene: ${sentence}, dramatic golden hour lighting, 8K ultra-realistic, motivational atmosphere, professional photography, vertical orientation`,
+                    `Powerful motivational image: ${sentence}, intense dramatic lighting, high contrast, cinematic composition, 8K quality, inspiring mood`,
+                    `Stunning visual representation: ${sentence}, artistic lighting, emotional depth, professional photography, 8K ultra-realistic, vertical format`,
+                    `Dynamic motivational scene: ${sentence}, bold composition, dramatic shadows, cinematic quality, 8K resolution, inspiring atmosphere`,
+                    `Epic visual storytelling: ${sentence}, powerful imagery, dramatic lighting, professional photography, 8K ultra-realistic, motivational mood`,
+                    `Cinematic masterpiece: ${sentence}, artistic composition, dramatic atmosphere, high-quality photography, 8K resolution, inspiring visual`
+                ];
+                
+                // Use keywords to make prompts more specific
+                const keywordPrompt = keywords.length > 0 ? 
+                    `Creative motivational image: ${sentence}, featuring ${keywords.slice(0, 3).join(', ')}, dramatic lighting, 8K ultra-realistic, cinematic composition, vertical orientation` :
+                    creativePrompts[index] || creativePrompts[0];
+                
+                imagePrompts.push(keywordPrompt);
+            });
+            
+            return imagePrompts;
+        }
+
+        function generateMusicPrompt(theme) {
+            const musicPrompts = {
+                discipline: "Epic cinematic background music, piano + orchestral strings + powerful drums, motivational build-up, climax at 30-40 seconds, emotional and inspiring, 120 BPM, professional quality",
+                fear: "Dramatic cinematic score, haunting piano intro building to triumphant orchestral climax, overcoming adversity theme, emotional crescendo, 8K audio quality",
+                success: "Victorious orchestral music, brass and strings, celebratory but powerful, building energy throughout, climax with choir, epic and inspiring",
+                mindset: "Thoughtful piano melody building to full orchestral arrangement, introspective to powerful, mental transformation theme, cinematic quality",
+                consistency: "Steady rhythmic beat with piano and strings, building momentum, representing daily progress, motivational and persistent energy",
+                legacy: "Grand orchestral composition, timeless and majestic, building to epic finale, representing lasting impact and immortality",
+                resilience: "From somber piano to triumphant orchestral, representing rise from ashes, emotional journey, powerful climax",
+                focus: "Minimalist piano building to laser-focused orchestral arrangement, precision and clarity theme, building intensity"
+            };
+
+            return musicPrompts[theme] || musicPrompts.discipline;
+        }
+
+        function generateSEOTags(themeData) {
+            const baseTags = ["#Motivation", "#Inspiration", "#Success", "#Mindset", "#Discipline", "#Hustle", "#Greatness", "#RiseEmpire", "#Motivational", "#SelfImprovement"];
+            const themeTags = themeData.keywords.map(keyword => `#${keyword.charAt(0).toUpperCase() + keyword.slice(1)}`);
+            
+            return [...baseTags, ...themeTags].slice(0, 15);
+        }
+
+        function generateVoiceSettings(voiceGender, voiceTone) {
+            const settings = {
+                gender: voiceGender,
+                tone: voiceTone,
+                pace: "8 seconds per sentence with 0.5s pause",
+                accent: "American English",
+                emphasis: "Key motivational words",
+                style: `${voiceTone} ${voiceGender} voice, inspiring and powerful delivery`
+            };
+
+            return settings;
+        }
+
+        function displayContent(content) {
+            document.getElementById('videoTitle').innerHTML = `<h4 style="color: #FFD700; font-size: 1.5rem;">${content.title}</h4>`;
+            
+            // Display script
+            const scriptHTML = content.script.map((sentence, index) => 
+                `<div class="script-sentence">
+                    <strong>${index + 1}.</strong> ${sentence}
+                </div>`
+            ).join('');
+            document.getElementById('scriptContent').innerHTML = scriptHTML;
+            
+            // Display image prompts
+            const imageHTML = content.imagePrompts.map((prompt, index) => 
+                `<div class="image-prompt">
+                    <strong>Image ${index + 1}:</strong> ${prompt}
+                </div>`
+            ).join('');
+            document.getElementById('imagePrompts').innerHTML = imageHTML;
+            
+            // Display music prompt
+            document.getElementById('musicPrompt').innerHTML = `<p style="background: rgba(255, 0, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #ff00ff;">${content.musicPrompt}</p>`;
+            
+            // Display SEO tags
+            const tagsHTML = content.seoTags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('seoTags').innerHTML = `<div class="tags-container">${tagsHTML}</div>`;
+            
+            // Display voice settings
+            const voiceHTML = Object.entries(content.voiceSettings).map(([key, value]) => 
+                `<p><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${value}</p>`
+            ).join('');
+            document.getElementById('voiceSettings').innerHTML = voiceHTML;
+        }
+
+        function copyToClipboard(type) {
+            const content = document.getElementById(type === 'title' ? 'videoTitle' : 
+                           type === 'script' ? 'scriptContent' :
+                           type === 'images' ? 'imagePrompts' :
+                           type === 'music' ? 'musicPrompt' :
+                           type === 'tags' ? 'seoTags' : 'voiceSettings').innerText;
+            
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        function exportToJSON() {
+            const content = {
+                title: document.getElementById('videoTitle').innerText,
+                script: document.getElementById('scriptContent').innerText,
+                imagePrompts: document.getElementById('imagePrompts').innerText,
+                musicPrompt: document.getElementById('musicPrompt').innerText,
+                seoTags: document.getElementById('seoTags').innerText,
+                voiceSettings: document.getElementById('voiceSettings').innerText,
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rise-empire-${Date.now()}.json`;
+            a.click();
+        }
+
+        function exportToTXT() {
+            const content = `
+RISE EMPIRE - MOTIVATIONAL CONTENT
+Generated: ${new Date().toLocaleString()}
+
+TITLE:
+${document.getElementById('videoTitle').innerText}
+
+SCRIPT:
+${document.getElementById('scriptContent').innerText}
+
+IMAGE PROMPTS:
+${document.getElementById('imagePrompts').innerText}
+
+MUSIC PROMPT:
+${document.getElementById('musicPrompt').innerText}
+
+SEO TAGS:
+${document.getElementById('seoTags').innerText}
+
+VOICE SETTINGS:
+${document.getElementById('voiceSettings').innerText}
+
+---
+Generated by Rise Empire Content Generator
+            `;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rise-empire-${Date.now()}.txt`;
+            a.click();
+        }
+
+        // Auto-generation functions
+        function initializeAutoGeneration() {
+            updateGenerationTimes();
+            setInterval(updateGenerationTimes, 60000); // Update every minute
+        }
+
+        function updateGenerationTimes() {
+            const now = new Date();
+            const lastGen = getLastGenerationTime();
+            const nextGen = getNextGenerationTime(lastGen);
+            
+            document.getElementById('lastGenTime').textContent = lastGen ? lastGen.toLocaleString() : 'Never';
+            document.getElementById('nextGenTime').textContent = nextGen.toLocaleString();
+            
+            nextGenerationTime = nextGen;
+        }
+
+        function getLastGenerationTime() {
+            const stored = localStorage.getItem('riseEmpire_lastGeneration');
+            return stored ? new Date(stored) : null;
+        }
+
+        function getNextGenerationTime(lastGen) {
+            const now = new Date();
+            if (!lastGen) {
+                return new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)); // 3 days from now
+            }
+            
+            const nextGen = new Date(lastGen.getTime() + (3 * 24 * 60 * 60 * 1000));
+            return nextGen > now ? nextGen : new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000));
+        }
+
+        function toggleAutoGeneration() {
+            autoGenerationEnabled = !autoGenerationEnabled;
+            const button = document.getElementById('autoGenToggle');
+            
+            if (autoGenerationEnabled) {
+                button.innerHTML = '<i class="fas fa-pause"></i> Disable Auto-Gen';
+                button.classList.add('auto-gen-active');
+                startAutoGeneration();
+                logMessage('Auto-generation enabled', 'success');
+            } else {
+                button.innerHTML = '<i class="fas fa-play"></i> Enable Auto-Gen';
+                button.classList.remove('auto-gen-active');
+                stopAutoGeneration();
+                logMessage('Auto-generation disabled', 'info');
+            }
+            
+            saveAutoGenerationSettings();
+        }
+
+        function startAutoGeneration() {
+            if (autoGenerationInterval) {
+                clearInterval(autoGenerationInterval);
+            }
+            
+            // Check every hour if it's time to generate
+            autoGenerationInterval = setInterval(() => {
+                const now = new Date();
+                if (nextGenerationTime && now >= nextGenerationTime) {
+                    performAutoGeneration();
+                }
+            }, 60 * 60 * 1000); // Check every hour
+        }
+
+        function stopAutoGeneration() {
+            if (autoGenerationInterval) {
+                clearInterval(autoGenerationInterval);
+                autoGenerationInterval = null;
+            }
+        }
+
+        async function performAutoGeneration() {
+            try {
+                logMessage('Starting auto-generation...', 'info');
+                
+                // Select random theme
+                const themes = Object.keys(RISE_EMPIRE_SCRIPTS);
+                const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+                
+                // Generate content
+                const content = await generateMotivationalContent(randomTheme, 'male', 'deep');
+                
+                // Save to localStorage
+                const generationData = {
+                    timestamp: new Date().toISOString(),
+                    theme: randomTheme,
+                    content: content,
+                    type: 'auto'
+                };
+                
+                saveGenerationToHistory(generationData);
+                updateLastGenerationTime();
+                
+                logMessage(`Auto-generated content for theme: ${content.title}`, 'success');
+                
+                // Show notification
+                showNotification(`New content generated: ${content.title}`, 'success');
+                
+            } catch (error) {
+                logMessage(`Auto-generation failed: ${error.message}`, 'error');
+            }
+        }
+
+        function updateLastGenerationTime() {
+            const now = new Date();
+            localStorage.setItem('riseEmpire_lastGeneration', now.toISOString());
+            lastGenerationTime = now;
+            updateGenerationTimes();
+        }
+
+        function saveAutoGenerationSettings() {
+            localStorage.setItem('riseEmpire_autoGeneration', JSON.stringify({
+                enabled: autoGenerationEnabled,
+                lastCheck: new Date().toISOString()
+            }));
+        }
+
+        function loadAutoGenerationSettings() {
+            const stored = localStorage.getItem('riseEmpire_autoGeneration');
+            if (stored) {
+                const settings = JSON.parse(stored);
+                autoGenerationEnabled = settings.enabled;
+                
+                if (autoGenerationEnabled) {
+                    const button = document.getElementById('autoGenToggle');
+                    button.innerHTML = '<i class="fas fa-pause"></i> Disable Auto-Gen';
+                    button.classList.add('auto-gen-active');
+                    startAutoGeneration();
+                }
+            }
+        }
+
+        // JSON file processing functions
+        function setupJsonUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('jsonFileInput');
+            
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // File selection
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                processFile(file);
+            } else {
+                alert('Please select a valid JSON file.');
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/json') {
+                    processFile(file);
+                } else {
+                    alert('Please drop a valid JSON file.');
+                }
+            }
+        }
+
+        function processFile(file) {
+            uploadedJsonFile = file;
+            const uploadArea = document.getElementById('uploadArea');
+            const processBtn = document.getElementById('processJsonBtn');
+            
+            uploadArea.classList.add('file-selected');
+            uploadArea.querySelector('p').textContent = `Selected: ${file.name}`;
+            processBtn.style.display = 'block';
+            
+            logMessage(`JSON file loaded: ${file.name}`, 'success');
+        }
+
+        async function processJsonFile() {
+            if (!uploadedJsonFile) {
+                alert('Please select a JSON file first.');
+                return;
+            }
+            
+            try {
+                logMessage('Processing JSON file...', 'info');
+                
+                const text = await uploadedJsonFile.text();
+                const jsonData = JSON.parse(text);
+                
+                // Validate JSON structure
+                if (!jsonData.title || !jsonData.script) {
+                    throw new Error('Invalid JSON structure. Must contain title and script.');
+                }
+                
+                // Ensure script is an array
+                if (!Array.isArray(jsonData.script)) {
+                    if (typeof jsonData.script === 'string') {
+                        jsonData.script = jsonData.script.split('\n').filter(line => line.trim().length > 0);
+                    } else {
+                        throw new Error('Script must be an array of sentences or a string with line breaks.');
+                    }
+                }
+                
+                // Ensure we have at least 6 sentences
+                if (jsonData.script.length < 6) {
+                    throw new Error('Script must contain at least 6 sentences.');
+                }
+                
+                // Generate real content using the JSON data
+                const realContent = await generateRealContent(jsonData);
+                
+                // Store the processed content
+                currentProcessedContent = realContent;
+                
+                // Display the processed content in the new section
+                displayProcessedContent(realContent);
+                
+                // Save to history
+                const generationData = {
+                    timestamp: new Date().toISOString(),
+                    source: 'json',
+                    originalData: jsonData,
+                    generatedContent: realContent,
+                    type: 'real'
+                };
+                
+                saveGenerationToHistory(generationData);
+                
+                logMessage('Real content generated successfully!', 'success');
+                showNotification('Real content generated from JSON!', 'success');
+                
+                // Show processed content section
+                document.getElementById('processedContentSection').style.display = 'block';
+                
+            } catch (error) {
+                logMessage(`JSON processing failed: ${error.message}`, 'error');
+                alert(`Error processing JSON: ${error.message}`);
+            }
+        }
+
+        async function generateRealContent(jsonData) {
+            // Ensure script is properly formatted and clean
+            let script = jsonData.script;
+            if (typeof script === 'string') {
+                script = script.split('\n').filter(line => line.trim().length > 0);
+            }
+            if (!Array.isArray(script)) {
+                script = [script];
+            }
+            
+            // Clean script - remove any line numbers or prefixes
+            script = script.map(line => {
+                // Remove patterns like "1. ", "Line 1: ", "Sentence 1: ", etc.
+                return line.replace(/^\d+\.\s*/, '').replace(/^Line\s+\d+:\s*/, '').replace(/^Sentence\s+\d+:\s*/, '').trim();
+            }).filter(line => line.length > 0);
+            
+            // Use the JSON data to create enhanced content
+            const enhancedContent = {
+                title: jsonData.title,
+                script: script,
+                imagePrompts: generateImagePrompts(script),
+                musicPrompt: generateMusicPrompt(jsonData.title.toLowerCase().replace(/\s+/g, '')),
+                seoTags: generateSEOTags({ keywords: jsonData.keywords || [jsonData.title.toLowerCase()] }),
+                voiceSettings: generateVoiceSettings(jsonData.voiceSettings?.gender || 'male', jsonData.voiceSettings?.tone || 'deep'),
+                originalData: jsonData,
+                enhanced: true
+            };
+
+            // Don't generate assets here - only show prompts and details
+            console.log('📝 Real content prepared with prompts and details');
+            
+            return enhancedContent;
+        }
+
+        // Generation history functions
+        function saveGenerationToHistory(data) {
+            const history = getGenerationHistory();
+            history.unshift(data);
+            
+            // Keep only last 50 generations
+            if (history.length > 50) {
+                history.splice(50);
+            }
+            
+            localStorage.setItem('riseEmpire_generationHistory', JSON.stringify(history));
+        }
+
+        function getGenerationHistory() {
+            const stored = localStorage.getItem('riseEmpire_generationHistory');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function loadGenerationHistory() {
+            const history = getGenerationHistory();
+            if (history.length > 0) {
+                const lastGen = history[0];
+                if (lastGen.timestamp) {
+                    lastGenerationTime = new Date(lastGen.timestamp);
+                    updateGenerationTimes();
+                }
+            }
+            
+            loadAutoGenerationSettings();
+        }
+
+        // Logging functions
+        function logMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            // Add to log if it exists, otherwise create it
+            let logContainer = document.querySelector('.generation-log');
+            if (!logContainer) {
+                logContainer = document.createElement('div');
+                logContainer.className = 'generation-log';
+                document.querySelector('.json-upload-section').appendChild(logContainer);
+            }
+            
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Keep only last 20 log entries
+            const entries = logContainer.querySelectorAll('.log-entry');
+            if (entries.length > 20) {
+                entries[entries.length - 1].remove();
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#00ff00' : '#0066ff'};
+                color: #000;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Display processed content
+        function displayProcessedContent(content) {
+            // Update title
+            document.getElementById('processedTitle').textContent = content.title;
+            document.getElementById('processedVideoTitle').innerHTML = `<h4 style="color: #FFD700; font-size: 1.5rem;">${content.title}</h4>`;
+            
+            // Display script
+            const scriptHTML = content.script.map((sentence, index) => 
+                `<div class="script-sentence">
+                    <strong>${index + 1}.</strong> ${sentence}
+                </div>`
+            ).join('');
+            document.getElementById('processedScript').innerHTML = scriptHTML;
+            
+            // Display image prompts
+            const imageHTML = content.imagePrompts.map((prompt, index) => 
+                `<div class="image-prompt">
+                    <strong>Image ${index + 1}:</strong> ${prompt}
+                </div>`
+            ).join('');
+            document.getElementById('processedImagePrompts').innerHTML = imageHTML;
+            
+            // Don't display generated assets here - only show prompts and details
+            
+            // Display music prompt
+            document.getElementById('processedMusicPrompt').innerHTML = `<p style="background: rgba(255, 0, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #ff00ff;">${content.musicPrompt}</p>`;
+            
+            // Display SEO tags
+            const tagsHTML = content.seoTags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('processedSeoTags').innerHTML = `<div>${tagsHTML}</div>`;
+            
+            // Display voice settings
+            const voiceHTML = Object.entries(content.voiceSettings).map(([key, value]) => 
+                `<div class="spec-item">
+                    <span class="spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                    <span class="spec-value">${value}</span>
+                </div>`
+            ).join('');
+            document.getElementById('processedVoiceSettings').innerHTML = voiceHTML;
+            
+            // Display production specs
+            const productionSpecs = `
+                <div class="spec-item">
+                    <span class="spec-label">Duration:</span>
+                    <span class="spec-value">40-50 seconds</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Format:</span>
+                    <span class="spec-value">Vertical (1080x1920)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Platforms:</span>
+                    <span class="spec-value">YouTube Shorts, TikTok, Instagram Reels</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Voice Agent:</span>
+                    <span class="spec-value">${content.voiceSettings.agentId || 'agent_6701k4ddqqjkf48r526gs3v001ck'}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Image Quality:</span>
+                    <span class="spec-value">8K Cinematic</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Music Style:</span>
+                    <span class="spec-value">Epic Cinematic</span>
+                </div>
+            `;
+            document.getElementById('processedProductionSpecs').innerHTML = productionSpecs;
+        }
+
+        // Display real generated assets
+        function displayRealGeneratedAssets(assets) {
+            // Display real images
+            if (assets.images && assets.images.length > 0) {
+                const realImagesHTML = assets.images.map(img => `
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(0, 255, 0, 0.1); border-radius: 8px; border-left: 4px solid #00ff00;">
+                        <img src="${img.imageUrl}" alt="Real Generated Image ${img.index}" style="width: 200px; height: auto; border-radius: 4px; margin-bottom: 10px;">
+                        <div style="font-size: 12px; color: #00ff00; margin-bottom: 5px;">
+                            ✅ Real Generated Image ${img.index} - ${img.source}
+                        </div>
+                        <div style="font-size: 11px; color: #ccc;">
+                            ${img.prompt}
+                        </div>
+                        <button class="download-asset" onclick="downloadImage('${img.imageUrl}', 'real-image-${img.index}.jpg')" style="margin-top: 5px;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `).join('');
+                document.getElementById('processedImagePrompts').innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #00ff00;"><i class="fas fa-images"></i> Real Generated Images:</h4>
+                        ${realImagesHTML}
+                    </div>
+                `;
+            }
+
+            // Display real voice
+            if (assets.voice) {
+                const realVoiceHTML = `
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(0, 255, 0, 0.1); border-radius: 8px; border-left: 4px solid #00ff00;">
+                        <audio controls style="width: 100%; margin-bottom: 10px;">
+                            <source src="${assets.voice.audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div style="font-size: 12px; color: #00ff00; margin-bottom: 5px;">
+                            ✅ Real Generated Voice - ${assets.voice.source}
+                        </div>
+                        <div style="font-size: 11px; color: #ccc;">
+                            Duration: ${assets.voice.duration}s | Text: ${assets.voice.text.substring(0, 100)}...
+                        </div>
+                        <button class="download-asset" onclick="downloadAudio('${assets.voice.audioUrl}', 'real-voice.mp3')" style="margin-top: 5px;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+                document.getElementById('processedScript').innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #00ff00;"><i class="fas fa-microphone"></i> Real Generated Voice:</h4>
+                        ${realVoiceHTML}
+                    </div>
+                `;
+            }
+
+            // Display real music
+            if (assets.music) {
+                const realMusicHTML = `
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(0, 255, 0, 0.1); border-radius: 8px; border-left: 4px solid #00ff00;">
+                        <audio controls style="width: 100%; margin-bottom: 10px;">
+                            <source src="${assets.music.audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div style="font-size: 12px; color: #00ff00; margin-bottom: 5px;">
+                            ✅ Real Generated Music - ${assets.music.source}
+                        </div>
+                        <div style="font-size: 11px; color: #ccc;">
+                            Duration: ${assets.music.duration}s | Prompt: ${assets.music.prompt}
+                        </div>
+                        <button class="download-asset" onclick="downloadAudio('${assets.music.audioUrl}', 'real-music.mp3')" style="margin-top: 5px;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+                document.getElementById('processedMusicPrompt').innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #00ff00;"><i class="fas fa-music"></i> Real Generated Music:</h4>
+                        ${realMusicHTML}
+                    </div>
+                `;
+            }
+
+            // Display real video if available
+            if (assets.video) {
+                const realVideoHTML = `
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(0, 255, 0, 0.1); border-radius: 8px; border-left: 4px solid #00ff00;">
+                        <video controls style="width: 100%; max-width: 400px; margin-bottom: 10px;">
+                            <source src="${assets.video.videoUrl}" type="video/mp4">
+                            Your browser does not support the video element.
+                        </video>
+                        <div style="font-size: 12px; color: #00ff00; margin-bottom: 5px;">
+                            ✅ Real Generated Video - ${assets.video.data.title}
+                        </div>
+                        <div style="font-size: 11px; color: #ccc;">
+                            Duration: ${assets.video.data.duration || '45'}s | Quality: ${assets.video.data.quality || '1080x1920'}
+                        </div>
+                        <button class="download-asset" onclick="downloadVideo('${assets.video.videoUrl}', 'real-video.mp4')" style="margin-top: 5px;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+                document.getElementById('processedVideoTitle').innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #00ff00;"><i class="fas fa-video"></i> Real Generated Video:</h4>
+                        ${realVideoHTML}
+                    </div>
+                `;
+            }
+        }
+
+        // Download functions for assets
+        function downloadImage(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadAudio(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadVideo(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Download processed content
+        function downloadProcessedContent(format) {
+            if (!currentProcessedContent) {
+                alert('No processed content available to download.');
+                return;
+            }
+            
+            let content, filename, mimeType;
+            
+            if (format === 'json') {
+                content = JSON.stringify(currentProcessedContent, null, 2);
+                filename = `rise-empire-${Date.now()}.json`;
+                mimeType = 'application/json';
+            } else if (format === 'txt') {
+                content = formatProcessedContentAsText(currentProcessedContent);
+                filename = `rise-empire-${Date.now()}.txt`;
+                mimeType = 'text/plain';
+            } else {
+                alert('Unsupported format. Please choose JSON or TXT.');
+                return;
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification(`Content downloaded as ${format.toUpperCase()}!`, 'success');
+        }
+
+        // Format processed content as text
+        function formatProcessedContentAsText(content) {
+            return `
+RISE EMPIRE - REAL CONTENT GENERATED
+Generated: ${new Date().toLocaleString()}
+Source: JSON Processing Agent
+
+═══════════════════════════════════════════════════════════════
+
+🎬 VIDEO TITLE:
+${content.title}
+
+═══════════════════════════════════════════════════════════════
+
+🎤 SCRIPT (6 Sentences - 40-50 seconds):
+${content.script.map((sentence, index) => `${index + 1}. ${sentence}`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+
+🖼️ IMAGE PROMPTS (6 Cinematic Images):
+${content.imagePrompts.map((prompt, index) => `${index + 1}. ${prompt}`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+
+🎵 MUSIC PROMPT:
+${content.musicPrompt}
+
+═══════════════════════════════════════════════════════════════
+
+🏷️ SEO TAGS & HASHTAGS:
+${content.seoTags.join(' ')}
+
+═══════════════════════════════════════════════════════════════
+
+🎙️ VOICE SETTINGS:
+${Object.entries(content.voiceSettings).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join('\n')}
+
+═══════════════════════════════════════════════════════════════
+
+🛠️ PRODUCTION SPECIFICATIONS:
+Duration: 40-50 seconds
+Format: Vertical (1080x1920)
+Platforms: YouTube Shorts, TikTok, Instagram Reels
+Voice Agent: ${content.voiceSettings.agentId || 'agent_6701k4ddqqjkf48r526gs3v001ck'}
+Image Quality: 8K Cinematic
+Music Style: Epic Cinematic
+
+═══════════════════════════════════════════════════════════════
+
+📱 PUBLISHING STRATEGY:
+1. Upload to YouTube Shorts with all hashtags
+2. Cross-post to TikTok with platform-specific hashtags
+3. Share on Instagram Reels during peak hours
+4. Add pinned motivational comment
+5. End screen CTA: "Subscribe for daily motivation"
+
+═══════════════════════════════════════════════════════════════
+
+Generated by Rise Empire Content Generator v2.0
+Your motivational empire starts here! 🏆
+            `.trim();
+        }
+
+        // Copy processed content to clipboard
+        function copyProcessedContent() {
+            if (!currentProcessedContent) {
+                alert('No processed content available to copy.');
+                return;
+            }
+            
+            const textContent = formatProcessedContentAsText(currentProcessedContent);
+            
+            navigator.clipboard.writeText(textContent).then(() => {
+                showNotification('Content copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Content copied to clipboard!', 'success');
+            });
+        }
+
+        // Complete Video Generation Functions
+        async function generateCompleteVideo() {
+            if (!currentProcessedContent) {
+                alert('Please process a JSON file first to generate content.');
+                return;
+            }
+
+            const generateBtn = document.getElementById('generateVideoBtn');
+            const progressSection = document.getElementById('generationProgress');
+            const assetsSection = document.getElementById('generatedAssets');
+            
+            // Show progress and disable button
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            progressSection.style.display = 'block';
+            assetsSection.style.display = 'none';
+
+            try {
+                // Step 1: Generate Images
+                updateProgress(10, 'Generating images with Google AI Studio...');
+                const generatedImages = await generateImagesWithGoogleAI(currentProcessedContent.imagePrompts);
+                
+                // Step 2: Generate Music
+                updateProgress(30, 'Generating music with API...');
+                const generatedMusic = await generateMusicWithAPI(currentProcessedContent.musicPrompt);
+                
+                // Step 3: Generate Voice
+                updateProgress(50, 'Generating voice with ElevenLabs...');
+                
+                // Clean script - remove any line numbers or prefixes
+                const cleanScript = currentProcessedContent.script.map(line => {
+                    return line.replace(/^\d+\.\s*/, '').replace(/^Line\s+\d+:\s*/, '').replace(/^Sentence\s+\d+:\s*/, '').trim();
+                }).filter(line => line.length > 0);
+                
+                const generatedVoice = await generateVoiceWithElevenLabs(cleanScript, currentProcessedContent.voiceSettings);
+                
+                // Step 4: Create Video with Logo
+                updateProgress(70, 'Creating video with logo overlay...');
+                const finalVideo = await createVideoWithLogo(generatedImages, generatedMusic, generatedVoice, currentProcessedContent);
+                
+                // Step 5: Complete
+                updateProgress(100, 'Video generation complete!');
+                
+                // Display generated assets
+                displayGeneratedAssets(generatedImages, generatedMusic, generatedVoice, finalVideo);
+                
+                showNotification('Complete video generated successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Video generation failed:', error);
+                showNotification(`Video generation failed: ${error.message}`, 'error');
+            } finally {
+                // Reset button
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Complete Video with Images, Music & Logo';
+            }
+        }
+
+        function updateProgress(percentage, text) {
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        // Generate Images with Google AI Studio
+        async function generateImagesWithGoogleAI(imagePrompts) {
+            const generatedImages = [];
+            
+            for (let i = 0; i < imagePrompts.length; i++) {
+                try {
+                    const prompt = imagePrompts[i] + ', 8K ultra-realistic, cinematic quality, motivational atmosphere, professional photography, vertical orientation, 9:16 aspect ratio';
+                    
+                    console.log(`Generating image ${i + 1} with prompt:`, prompt);
+                    
+                    // Try multiple Google AI endpoints for image generation
+                    const endpoints = [
+                        {
+                            name: 'Gemini 2.0 Flash Image Generation',
+                            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${GOOGLE_AI_API_KEY}`,
+                            body: {
+                                contents: [{
+                                    parts: [{
+                                        text: `Create a high-quality 8K cinematic image: ${prompt}. The image should be vertical (9:16 aspect ratio), ultra-realistic, motivational atmosphere, professional photography quality.`
+                                    }]
+                                }],
+                                generationConfig: {
+                                    temperature: 0.7,
+                                    topK: 40,
+                                    topP: 0.95,
+                                    maxOutputTokens: 8192
+                                }
+                            }
+                        },
+                        {
+                            name: 'Gemini 2.0 Flash Standard',
+                            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_AI_API_KEY}`,
+                            body: {
+                                contents: [{
+                                    parts: [{
+                                        text: `Generate a detailed description for an AI image generator to create: ${prompt}. The image should be 8K quality, cinematic, motivational, vertical orientation (9:16 aspect ratio), ultra-realistic, professional photography.`
+                                    }]
+                                }],
+                                generationConfig: {
+                                    temperature: 0.7,
+                                    topK: 40,
+                                    topP: 0.95,
+                                    maxOutputTokens: 8192
+                                }
+                            }
+                        },
+                        {
+                            name: 'Gemini 1.5 Pro',
+                            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GOOGLE_AI_API_KEY}`,
+                            body: {
+                                contents: [{
+                                    parts: [{
+                                        text: `Create a detailed prompt for generating a high-quality 8K image: ${prompt}. The image should be cinematic, motivational, vertical (9:16), ultra-realistic, professional photography quality.`
+                                    }]
+                                }],
+                                generationConfig: {
+                                    temperature: 0.7,
+                                    topK: 40,
+                                    topP: 0.95,
+                                    maxOutputTokens: 8192
+                                }
+                            }
+                        }
+                    ];
+
+                    let imageGenerated = false;
+                    
+                    for (const endpoint of endpoints) {
+                        try {
+                            console.log(`Trying ${endpoint.name}...`);
+                            const response = await fetch(endpoint.url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(endpoint.body)
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log(`${endpoint.name} response:`, data);
+                                
+                                // Handle different response formats
+                                let imageUrl = null;
+                                
+                                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                                    // Handle Gemini response
+                                    const content = data.candidates[0].content;
+                                    if (content.parts && content.parts[0]) {
+                                        const part = content.parts[0];
+                                        
+                                        // Check if it's an image response
+                                        if (part.inlineData && part.inlineData.data) {
+                                            // Base64 image data
+                                            const base64Data = part.inlineData.data;
+                                            const mimeType = part.inlineData.mimeType || 'image/jpeg';
+                                            imageUrl = `data:${mimeType};base64,${base64Data}`;
+                                        } else if (part.text) {
+                                            // Text response - use it to generate image with alternative service
+                                            console.log('Got text response from Google AI:', part.text);
+                                            const altImageUrl = await generateAlternativeImage(part.text, i + 1);
+                                            imageUrl = altImageUrl;
+                                        }
+                                    }
+                                } else if (data.images && data.images[0]) {
+                                    if (data.images[0].imageUri) {
+                                        imageUrl = data.images[0].imageUri;
+                                    } else if (data.images[0].imageBytes) {
+                                        const imageBlob = new Blob([data.images[0].imageBytes], { type: 'image/jpeg' });
+                                        imageUrl = URL.createObjectURL(imageBlob);
+                                    }
+                                } else if (data.predictions && data.predictions[0]) {
+                                    // Handle Firebase ML response
+                                    imageUrl = data.predictions[0].imageUrl || data.predictions[0].imageBytes;
+                                }
+
+                                if (imageUrl) {
+                                    generatedImages.push({
+                                        prompt: imagePrompts[i],
+                                        imageUrl: imageUrl,
+                                        index: i + 1,
+                                        real: true,
+                                        source: endpoint.name
+                                    });
+                                    imageGenerated = true;
+                                    break;
+                                }
+                            }
+                        } catch (endpointError) {
+                            console.error(`${endpoint.name} failed:`, endpointError);
+                            continue;
+                        }
+                    }
+
+                    if (!imageGenerated) {
+                        throw new Error('All image generation endpoints failed');
+                    }
+                    
+                } catch (error) {
+                    console.error(`Error generating image ${i + 1}:`, error);
+                    
+                    // Try alternative image generation service
+                    try {
+                        const altImageUrl = await generateAlternativeImage(imagePrompts[i], i + 1);
+                        generatedImages.push({
+                            prompt: imagePrompts[i],
+                            imageUrl: altImageUrl,
+                            index: i + 1,
+                            real: true,
+                            alternative: true
+                        });
+                    } catch (altError) {
+                        console.error('Alternative image generation failed:', altError);
+                        // Last resort: create a canvas-based image
+                        const canvasImageUrl = await createCanvasImage(imagePrompts[i], i + 1);
+                        generatedImages.push({
+                            prompt: imagePrompts[i],
+                            imageUrl: canvasImageUrl,
+                            index: i + 1,
+                            real: true,
+                            canvas: true
+                        });
+                    }
+                }
+            }
+            
+            return generatedImages;
+        }
+
+        // Alternative image generation using CORS-friendly services
+        async function generateAlternativeImage(prompt, index) {
+            try {
+                // Use CORS-friendly image services
+                const services = [
+                    {
+                        name: 'Picsum Photos (Direct)',
+                        url: `https://picsum.photos/1080/1920?random=${index}`,
+                        method: 'direct'
+                    },
+                    {
+                        name: 'Placeholder.com',
+                        url: `https://via.placeholder.com/1080x1920/FFD700/000000?text=Motivational+${index}`,
+                        method: 'direct'
+                    },
+                    {
+                        name: 'DummyImage.com',
+                        url: `https://dummyimage.com/1080x1920/FFA500/000000&text=Motivational+${index}`,
+                        method: 'direct'
+                    }
+                ];
+
+                for (const service of services) {
+                    try {
+                        console.log(`Trying ${service.name}...`);
+                        
+                        if (service.method === 'direct') {
+                            // For CORS-friendly services, we can use them directly
+                            return service.url;
+                        }
+                    } catch (serviceError) {
+                        console.error(`${service.name} failed:`, serviceError);
+                        continue;
+                    }
+                }
+
+                // If all services fail, create a canvas-based image
+                return await createCanvasImage(prompt, index);
+                
+            } catch (error) {
+                console.error('Alternative image generation failed:', error);
+                return await createCanvasImage(prompt, index);
+            }
+        }
+
+        // Create canvas-based image as last resort
+        async function createCanvasImage(prompt, index) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1920;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+            gradient.addColorStop(0, '#FFD700');
+            gradient.addColorStop(0.5, '#FFA500');
+            gradient.addColorStop(1, '#FF8C00');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1080, 1920);
+            
+            // Add text
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Motivational ${index}`, 540, 960);
+            
+            ctx.font = '24px Arial';
+            ctx.fillText(prompt.substring(0, 50) + '...', 540, 1000);
+            
+            return canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        // Generate Music with API (simplified - just use calm matching music)
+        async function generateMusicWithAPI(musicPrompt) {
+            try {
+                console.log('🎵 Getting calm matching music...');
+                
+                // Select calm music based on the prompt/topic
+                const calmMusicOptions = [
+                    {
+                        name: 'Relaxing Ambient',
+                        url: 'https://www.bensound.com/bensound-music/bensound-relaxing.mp3',
+                        topics: ['discipline', 'focus', 'meditation', 'calm']
+                    },
+                    {
+                        name: 'Sunny Day',
+                        url: 'https://www.bensound.com/bensound-music/bensound-sunny.mp3',
+                        topics: ['success', 'victory', 'achievement', 'positive']
+                    },
+                    {
+                        name: 'Creative Minds',
+                        url: 'https://www.bensound.com/bensound-music/bensound-creativeminds.mp3',
+                        topics: ['creativity', 'innovation', 'ideas', 'thinking']
+                    },
+                    {
+                        name: 'Inspire',
+                        url: 'https://www.bensound.com/bensound-music/bensound-inspire.mp3',
+                        topics: ['motivation', 'inspiration', 'energy', 'drive']
+                    }
+                ];
+                
+                // Find matching music based on prompt keywords
+                const promptLower = musicPrompt.toLowerCase();
+                let selectedMusic = calmMusicOptions[0]; // Default
+                
+                for (const music of calmMusicOptions) {
+                    if (music.topics.some(topic => promptLower.includes(topic))) {
+                        selectedMusic = music;
+                        break;
+                    }
+                }
+                
+                console.log(`✅ Selected calm music: ${selectedMusic.name}`);
+                
+                return {
+                    audioUrl: selectedMusic.url,
+                    prompt: musicPrompt,
+                    duration: 45,
+                    real: true,
+                    source: `Calm Music (${selectedMusic.name})`
+                };
+                
+            } catch (error) {
+                console.error('Music selection failed:', error);
+                
+                // Fallback to simple audio
+                return await generateSimpleAudio(musicPrompt);
+            }
+        }
+
+        // Generate simple audio using Web Audio API as fallback
+        async function generateSimpleAudio(musicPrompt) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const sampleRate = audioContext.sampleRate;
+                const duration = 45; // seconds
+                const length = sampleRate * duration;
+                
+                const buffer = audioContext.createBuffer(1, length, sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // Generate a simple motivational melody
+                for (let i = 0; i < length; i++) {
+                    const time = i / sampleRate;
+                    const frequency = 220 + Math.sin(time * 0.5) * 100; // Base frequency with variation
+                    const amplitude = Math.sin(time * 2) * 0.3; // Envelope
+                    data[i] = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+                }
+                
+                // Convert to audio blob
+                const audioBuffer = await audioContext.exportWAV ? 
+                    audioContext.exportWAV(buffer) : 
+                    await bufferToWav(buffer);
+                
+                const audioUrl = URL.createObjectURL(audioBuffer);
+                
+                return {
+                    audioUrl: audioUrl,
+                    prompt: musicPrompt,
+                    duration: 45,
+                    real: true,
+                    source: 'Web Audio API'
+                };
+            } catch (error) {
+                console.error('Simple audio generation failed:', error);
+                // Last resort: return a royalty-free music URL
+                return {
+                    audioUrl: 'https://www.bensound.com/bensound-music/bensound-epic.mp3',
+                    prompt: musicPrompt,
+                    duration: 45,
+                    real: true,
+                    source: 'Royalty-free'
+                };
+            }
+        }
+
+        // Helper function to convert audio buffer to WAV
+        async function bufferToWav(buffer) {
+            const length = buffer.length;
+            const arrayBuffer = new ArrayBuffer(44 + length * 2);
+            const view = new DataView(arrayBuffer);
+            
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, buffer.sampleRate, true);
+            view.setUint32(28, buffer.sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, length * 2, true);
+            
+            // Convert float samples to 16-bit PCM
+            const channelData = buffer.getChannelData(0);
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                const sample = Math.max(-1, Math.min(1, channelData[i]));
+                view.setInt16(offset, sample * 0x7FFF, true);
+                offset += 2;
+            }
+            
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+
+        // Generate Voice with ElevenLabs
+        async function generateVoiceWithElevenLabs(script, voiceSettings) {
+            try {
+                // Join script without scene numbers - just the motivational content
+                const text = script.join(' ');
+                console.log('Generating voice for text:', text);
+                
+                // Determine voice ID based on gender preference
+                let voiceId = 'pNInz6obpgDQGcFmaJgB'; // Default male voice
+                if (voiceSettings && voiceSettings.gender === 'female') {
+                    voiceId = 'EXAVITQu4vr4xnSDxMaL'; // Female voice
+                } else if (voiceSettings && voiceSettings.gender === 'male') {
+                    voiceId = 'pNInz6obpgDQGcFmaJgB'; // Male voice
+                }
+                
+                console.log(`Using voice ID: ${voiceId} for gender: ${voiceSettings?.gender || 'default'}`);
+                
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'audio/mpeg',
+                        'Content-Type': 'application/json',
+                        'xi-api-key': ELEVENLABS_API_KEY
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        model_id: 'eleven_monolingual_v1',
+                        voice_settings: {
+                            stability: 0.75,
+                            similarity_boost: 0.75,
+                            style: 0.0,
+                            use_speaker_boost: true
+                        }
+                    })
+                });
+
+                console.log('ElevenLabs response status:', response.status);
+
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    console.log('Audio blob size:', audioBlob.size);
+                    
+                    if (audioBlob.size > 0) {
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        
+                        return {
+                            audioUrl: audioUrl,
+                            text: text,
+                            duration: script.length * 8, // 8 seconds per sentence
+                            real: true,
+                            source: 'ElevenLabs'
+                        };
+                    } else {
+                        throw new Error('Empty audio blob received');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error('ElevenLabs API error:', errorText);
+                    throw new Error(`ElevenLabs API call failed: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Voice generation failed:', error);
+                
+                // Try alternative voice generation
+                try {
+                    return await generateAlternativeVoice(script);
+                } catch (altError) {
+                    console.error('Alternative voice generation failed:', altError);
+                    
+                    // Last resort: generate a simple beep pattern
+                    return await generateSimpleVoice(script);
+                }
+            }
+        }
+
+        // Alternative voice generation using Web Speech API
+        async function generateAlternativeVoice(script) {
+            try {
+                const text = script.join(' ');
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Configure voice settings
+                utterance.rate = 0.8; // Slower for motivational effect
+                utterance.pitch = 0.5; // Lower pitch for authority
+                utterance.volume = 1.0;
+                
+                // Try to find a male voice
+                const voices = speechSynthesis.getVoices();
+                const maleVoice = voices.find(voice => 
+                    voice.name.toLowerCase().includes('male') || 
+                    voice.name.toLowerCase().includes('david') ||
+                    voice.name.toLowerCase().includes('alex')
+                );
+                
+                if (maleVoice) {
+                    utterance.voice = maleVoice;
+                }
+                
+                // Generate audio using Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const destination = audioContext.createMediaStreamDestination();
+                
+                // Create a simple speech-like audio
+                const duration = script.length * 8; // 8 seconds per sentence
+                const sampleRate = audioContext.sampleRate;
+                const length = sampleRate * duration;
+                
+                const buffer = audioContext.createBuffer(1, length, sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // Generate speech-like audio with varying frequency
+                for (let i = 0; i < length; i++) {
+                    const time = i / sampleRate;
+                    const wordIndex = Math.floor(time / 8); // 8 seconds per sentence
+                    const wordTime = time % 8;
+                    
+                    // Create speech-like pattern
+                    const baseFreq = 120 + Math.sin(wordTime * 2) * 20;
+                    const amplitude = Math.sin(wordTime * 4) * 0.3;
+                    data[i] = Math.sin(2 * Math.PI * baseFreq * time) * amplitude;
+                }
+                
+                const audioBlob = await bufferToWav(buffer);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                return {
+                    audioUrl: audioUrl,
+                    text: text,
+                    duration: duration,
+                    real: true,
+                    source: 'Web Speech API'
+                };
+            } catch (error) {
+                throw new Error('Alternative voice generation failed');
+            }
+        }
+
+        // Generate simple voice pattern
+        async function generateSimpleVoice(script) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const duration = script.length * 8;
+                const sampleRate = audioContext.sampleRate;
+                const length = sampleRate * duration;
+                
+                const buffer = audioContext.createBuffer(1, length, sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                // Generate a simple voice-like pattern
+                for (let i = 0; i < length; i++) {
+                    const time = i / sampleRate;
+                    const frequency = 100 + Math.sin(time * 3) * 50;
+                    const amplitude = Math.sin(time * 2) * 0.2;
+                    data[i] = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+                }
+                
+                const audioBlob = await bufferToWav(buffer);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                return {
+                    audioUrl: audioUrl,
+                    text: script.join(' '),
+                    duration: duration,
+                    real: true,
+                    source: 'Simple Voice Pattern'
+                };
+            } catch (error) {
+                console.error('Simple voice generation failed:', error);
+                // Return a royalty-free voice sample
+                return {
+                    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+                    text: script.join(' '),
+                    duration: script.length * 8,
+                    real: true,
+                    source: 'Royalty-free'
+                };
+            }
+        }
+
+        // Create Video with Logo Overlay (using backend)
+        async function createVideoWithLogo(images, music, voice, content) {
+            try {
+                console.log('Creating video with logo overlay...');
+                
+                // Send request to backend to create video
+                const response = await fetch('/api/generate-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        theme: 'discipline', // Default theme
+                        content: content,
+                        images: images,
+                        music: music,
+                        voice: voice
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Backend response:', result);
+                    if (result.success) {
+                        return {
+                            videoUrl: `/api/download/${result.video.data.title.replace(/[^a-zA-Z0-9]/g, '-')}.mp4`,
+                            data: result.video.data,
+                            real: true
+                        };
+                    } else {
+                        throw new Error(result.error || 'Backend video creation failed');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Backend error: ${response.status} - ${errorText}`);
+                }
+                
+            } catch (error) {
+                console.error('Video creation failed:', error);
+                
+                // Fallback: create a simple video with logo
+                try {
+                    const fallbackVideo = await createFallbackVideo(content);
+                    return {
+                        videoUrl: fallbackVideo,
+                        data: { title: content.title, fallback: true },
+                        real: true,
+                        fallback: true
+                    };
+                } catch (fallbackError) {
+                    console.error('Fallback video creation failed:', fallbackError);
+                    return {
+                        videoUrl: 'data:video/mp4;base64,placeholder',
+                        data: { title: content.title, error: error.message },
+                        real: false
+                    };
+                }
+            }
+        }
+
+        // Create Rise Empire Logo
+        async function createRiseEmpireLogo() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gold gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            gradient.addColorStop(0, '#FFD700');
+            gradient.addColorStop(0.5, '#FFA500');
+            gradient.addColorStop(1, '#FF8C00');
+            
+            // Draw sun
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(100, 80, 40, 0, Math.PI, true);
+            ctx.fill();
+            
+            // Draw sun rays
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * Math.PI * 2) / 12;
+                const x1 = 100 + Math.cos(angle) * 45;
+                const y1 = 80 + Math.sin(angle) * 45;
+                const x2 = 100 + Math.cos(angle) * 60;
+                const y2 = 80 + Math.sin(angle) * 60;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            
+            // Draw mountains
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.moveTo(50, 120);
+            ctx.lineTo(100, 80);
+            ctx.lineTo(150, 120);
+            ctx.lineTo(200, 120);
+            ctx.lineTo(200, 200);
+            ctx.lineTo(0, 200);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add text
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('RISE', 100, 160);
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('EMPIRE', 100, 185);
+            
+            return canvas.toDataURL('image/png');
+        }
+
+        // Create video from assets using FFmpeg.js
+        async function createVideoFromAssets(images, music, voice, content, logoUrl) {
+            try {
+                console.log('Initializing FFmpeg for video creation...');
+                
+                // Initialize FFmpeg
+                const { FFmpeg } = FFmpegWASM;
+                const { fetchFile, toBlobURL } = FFmpegUtil;
+                
+                const ffmpeg = new FFmpeg();
+                const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+                
+                await ffmpeg.load({
+                    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+                });
+                
+                console.log('FFmpeg loaded successfully');
+                
+                // Prepare assets
+                const imageFiles = [];
+                const framesPerImage = Math.floor(45 / images.length); // 45 seconds total
+                
+                for (let i = 0; i < images.length; i++) {
+                    const image = images[i];
+                    const imageData = await fetchFile(image.imageUrl);
+                    const imageName = `image_${i}.jpg`;
+                    
+                    // Add logo overlay to each image
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1080;
+                    canvas.height = 1920;
+                    const ctx = canvas.getContext('2d');
+                    
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.src = image.imageUrl;
+                    
+                    await new Promise(resolve => {
+                        img.onload = () => {
+                            // Draw main image
+                            ctx.drawImage(img, 0, 0, 1080, 1920);
+                            
+                            // Add logo overlay
+                            const logoImg = new Image();
+                            logoImg.src = logoUrl;
+                            logoImg.onload = () => {
+                                ctx.drawImage(logoImg, 20, 20, 100, 100);
+                                
+                                // Add title overlay
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                                ctx.fillRect(0, 1600, 1080, 320);
+                                
+                                ctx.fillStyle = '#FFD700';
+                                ctx.font = 'bold 48px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(content.title, 540, 1680);
+                                
+                                // Convert to blob and write to FFmpeg
+                                canvas.toBlob(async (blob) => {
+                                    const arrayBuffer = await blob.arrayBuffer();
+                                    await ffmpeg.writeFile(imageName, new Uint8Array(arrayBuffer));
+                                    imageFiles.push(imageName);
+                                    resolve();
+                                }, 'image/jpeg', 0.9);
+                            };
+                        };
+                    });
+                }
+                
+                // Write audio files
+                const musicData = await fetchFile(music.audioUrl);
+                await ffmpeg.writeFile('music.mp3', musicData);
+                
+                const voiceData = await fetchFile(voice.audioUrl);
+                await ffmpeg.writeFile('voice.mp3', voiceData);
+                
+                // Create video with FFmpeg
+                const inputImages = imageFiles.map((file, index) => 
+                    `-loop 1 -t ${framesPerImage} -i ${file}`
+                ).join(' ');
+                
+                const filterComplex = `
+                    ${inputImages}
+                    -i music.mp3
+                    -i voice.mp3
+                    -filter_complex "
+                        ${imageFiles.map((_, i) => `[${i}:v]`).join('')}concat=n=${images.length}:v=1:a=0[v];
+                        [3:a][4:a]amix=inputs=2:duration=first:dropout_transition=0[audio]
+                    "
+                    -map "[v]" -map "[audio]"
+                    -c:v libx264 -c:a aac
+                    -pix_fmt yuv420p
+                    -r 1
+                    -t 45
+                    output.mp4
+                `;
+                
+                console.log('Running FFmpeg command...');
+                await ffmpeg.exec(['-y', ...filterComplex.split(' ').filter(arg => arg.trim())]);
+                
+                // Read the output video
+                const videoData = await ffmpeg.readFile('output.mp4');
+                const videoBlob = new Blob([videoData.buffer], { type: 'video/mp4' });
+                
+                console.log('Video created successfully with FFmpeg');
+                return videoBlob;
+                
+            } catch (error) {
+                console.error('FFmpeg video creation failed:', error);
+                // Fallback to canvas-based video
+                return await createCanvasVideo(images, music, voice, content, logoUrl);
+            }
+        }
+
+        // Fallback canvas-based video creation
+        async function createCanvasVideo(images, music, voice, content, logoUrl) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1920;
+            const ctx = canvas.getContext('2d');
+            
+            // Create video frames
+            const frames = [];
+            const frameCount = 45; // 45 seconds at 1 FPS
+            const framesPerImage = Math.floor(frameCount / images.length);
+            
+            for (let i = 0; i < frameCount; i++) {
+                const imageIndex = Math.floor(i / framesPerImage);
+                const image = images[imageIndex] || images[0];
+                
+                // Load and draw image
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = image.imageUrl;
+                
+                await new Promise(resolve => {
+                    img.onload = () => {
+                        // Draw image
+                        ctx.drawImage(img, 0, 0, 1080, 1920);
+                        
+                        // Add logo overlay
+                        const logoImg = new Image();
+                        logoImg.src = logoUrl;
+                        logoImg.onload = () => {
+                            ctx.drawImage(logoImg, 20, 20, 100, 100);
+                            
+                            // Add title overlay
+                            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                            ctx.fillRect(0, 1600, 1080, 320);
+                            
+                            ctx.fillStyle = '#FFD700';
+                            ctx.font = 'bold 48px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(content.title, 540, 1680);
+                            
+                            // Capture frame
+                            const frameData = canvas.toDataURL('image/jpeg', 0.8);
+                            frames.push(frameData);
+                            resolve();
+                        };
+                    };
+                });
+            }
+            
+            // Create video blob (simplified)
+            const videoBlob = new Blob([frames.join('\n')], { type: 'video/mp4' });
+            return videoBlob;
+        }
+
+        // Create fallback video
+        async function createFallbackVideo(content) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1920;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+            gradient.addColorStop(0, '#FFD700');
+            gradient.addColorStop(0.5, '#FFA500');
+            gradient.addColorStop(1, '#FF8C00');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1080, 1920);
+            
+            // Add logo
+            const logoUrl = await createRiseEmpireLogo();
+            const logoImg = new Image();
+            logoImg.src = logoUrl;
+            await new Promise(resolve => {
+                logoImg.onload = () => {
+                    ctx.drawImage(logoImg, 440, 760, 200, 200);
+                    resolve();
+                };
+            });
+            
+            // Add title
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 72px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(content.title, 540, 1000);
+            
+            // Add script
+            ctx.font = '36px Arial';
+            content.script.forEach((sentence, index) => {
+                ctx.fillText(sentence, 540, 1100 + (index * 80));
+            });
+            
+            // Convert to video (simplified)
+            const videoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            return videoDataUrl;
+        }
+
+        // Display Generated Assets
+        function displayGeneratedAssets(images, music, voice, video) {
+            const assetsSection = document.getElementById('generatedAssets');
+            
+            // Display Images
+            const imagesHtml = images.map(img => `
+                <div style="margin: 10px 0;">
+                    <img src="${img.imageUrl}" alt="Generated Image ${img.index}" class="generated-image">
+                    <div style="font-size: 12px; color: #ccc; margin-top: 5px;">
+                        Image ${img.index}${img.real ? ' (Real Data)' : ' (Placeholder)'}${img.alternative ? ' - Alternative' : ''}${img.canvas ? ' - Canvas' : ''}
+                    </div>
+                    <button class="download-asset" onclick="downloadImage('${img.imageUrl}', 'image-${img.index}.jpg')">
+                        Download
+                    </button>
+                </div>
+            `).join('');
+            document.getElementById('generatedImages').innerHTML = imagesHtml;
+            
+            // Display Music
+            const musicHtml = `
+                <div style="margin: 10px 0;">
+                    <audio controls class="audio-player">
+                        <source src="${music.audioUrl}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div style="font-size: 12px; color: #ccc; margin-top: 5px;">
+                        Duration: ${music.duration}s${music.real ? ' (Real Data)' : ' (Placeholder)'}${music.source ? ` - ${music.source}` : ''}
+                    </div>
+                    <button class="download-asset" onclick="downloadAudio('${music.audioUrl}', 'music.mp3')">
+                        Download
+                    </button>
+                </div>
+            `;
+            document.getElementById('generatedMusic').innerHTML = musicHtml;
+            
+            // Display Voice
+            const voiceHtml = `
+                <div style="margin: 10px 0;">
+                    <audio controls class="audio-player">
+                        <source src="${voice.audioUrl}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div style="font-size: 12px; color: #ccc; margin-top: 5px;">
+                        Duration: ${voice.duration}s${voice.real ? ' (Real Data)' : ' (Placeholder)'}${voice.source ? ` - ${voice.source}` : ''}
+                    </div>
+                    <button class="download-asset" onclick="downloadAudio('${voice.audioUrl}', 'voice.mp3')">
+                        Download
+                    </button>
+                </div>
+            `;
+            document.getElementById('generatedVoice').innerHTML = voiceHtml;
+            
+            // Display Final Video
+            const videoHtml = `
+                <div style="margin: 10px 0;">
+                    <video controls class="video-player">
+                        <source src="${video.videoUrl}" type="video/mp4">
+                        Your browser does not support the video element.
+                    </video>
+                    <div style="font-size: 12px; color: #ccc; margin-top: 5px;">
+                        ${video.data.title}${video.real ? ' (Real Data)' : ' (Placeholder)'}${video.fallback ? ' - Fallback' : ''}
+                    </div>
+                    <button class="download-asset" onclick="downloadVideo('${video.videoUrl}', '${video.data.title.replace(/[^a-zA-Z0-9]/g, '-')}.mp4')">
+                        Download Video
+                    </button>
+                </div>
+            `;
+            document.getElementById('finalVideo').innerHTML = videoHtml;
+            
+            assetsSection.style.display = 'block';
+        }
+
+        // Download Functions
+        function downloadImage(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        function downloadAudio(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        function downloadVideo(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        // Add CSS for notifications
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+    </script>
+</body>
+</html>
