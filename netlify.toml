@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run netlify-build"
   publish = "dist"
 
 [build.environment]
@@ -17,3 +17,5 @@
 
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["node-fetch"]

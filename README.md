@@ -45,7 +45,7 @@ A comprehensive web application for generating motivational YouTube content for 
    - Click "New site from Git"
    - Connect your GitHub repository
    - Use these build settings:
-     - **Build command**: `npm run build`
+     - **Build command**: `npm run netlify-build`
      - **Publish directory**: `dist`
      - **Node version**: `18`
 
@@ -69,6 +69,13 @@ A comprehensive web application for generating motivational YouTube content for 
 2. **Deploy to Netlify**:
    - Drag and drop the `dist` folder to [netlify.com/drop](https://netlify.com/drop)
    - Or use Netlify CLI: `netlify deploy --prod --dir=dist`
+
+## ⚠️ Important Notes for Netlify Deployment
+
+- **Video Generation**: Full video generation with FFmpeg requires server-side processing and won't work on Netlify
+- **Content Processing**: JSON processing and content generation will work perfectly
+- **API Integration**: All API integrations (Google AI, ElevenLabs, etc.) will work
+- **For Full Video Generation**: Use the local server version (`node server.js`)
 
 ## API Keys Required
 

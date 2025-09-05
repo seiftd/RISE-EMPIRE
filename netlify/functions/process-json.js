@@ -23,70 +23,102 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { jsonData } = JSON.parse(event.body);
+        const jsonData = JSON.parse(event.body);
         
-        // Process JSON data (same logic as frontend)
+        // Process the JSON data and return enhanced content
         let script = jsonData.script;
+        
+        // Ensure script is an array
         if (typeof script === 'string') {
             script = script.split('\n').filter(line => line.trim().length > 0);
         }
-        if (!Array.isArray(script)) {
-            script = [script];
-        }
         
-        // Clean script - remove any line numbers or prefixes
+        // Clean script lines
         script = script.map(line => {
             return line.replace(/^\d+\.\s*/, '').replace(/^Line\s+\d+:\s*/, '').replace(/^Sentence\s+\d+:\s*/, '').trim();
         }).filter(line => line.length > 0);
         
         // Generate image prompts
-        const imagePrompts = script.map((sentence, index) => {
-            const keywords = sentence.toLowerCase().split(' ').filter(word => 
-                word.length > 3 && 
-                !['the', 'and', 'you', 'are', 'for', 'with', 'this', 'that', 'from', 'they', 'have', 'been', 'will', 'your', 'into', 'time', 'more', 'very', 'what', 'know', 'just', 'first', 'also', 'after', 'back', 'well', 'work', 'life', 'make', 'take', 'come', 'look', 'want', 'give', 'use', 'find', 'tell', 'ask', 'work', 'seem', 'feel', 'try', 'leave', 'call', 'good', 'new', 'first', 'last', 'long', 'great', 'little', 'own', 'other', 'old', 'right', 'big', 'high', 'different', 'small', 'large', 'next', 'early', 'young', 'important', 'few', 'public', 'bad', 'same', 'able'].includes(word)
-            );
-            
-            const creativePrompts = [
-                `Epic cinematic scene: ${sentence}, dramatic golden hour lighting, 8K ultra-realistic, motivational atmosphere, professional photography, vertical orientation`,
-                `Powerful motivational image: ${sentence}, intense dramatic lighting, high contrast, cinematic composition, 8K quality, inspiring mood`,
-                `Stunning visual representation: ${sentence}, artistic lighting, emotional depth, professional photography, 8K ultra-realistic, vertical format`,
-                `Dynamic motivational scene: ${sentence}, bold composition, dramatic shadows, cinematic quality, 8K resolution, inspiring atmosphere`,
-                `Epic visual storytelling: ${sentence}, powerful imagery, dramatic lighting, professional photography, 8K ultra-realistic, motivational mood`,
-                `Cinematic masterpiece: ${sentence}, artistic composition, dramatic atmosphere, high-quality photography, 8K resolution, inspiring visual`
-            ];
-            
-            const keywordPrompt = keywords.length > 0 ? 
-                `Creative motivational image: ${sentence}, featuring ${keywords.slice(0, 3).join(', ')}, dramatic lighting, 8K ultra-realistic, cinematic composition, vertical orientation` :
-                creativePrompts[index] || creativePrompts[0];
-            
-            return keywordPrompt;
-        });
+        const generateImagePrompts = (script) => {
+            const scriptArray = Array.isArray(script) ? script : [script];
+            return scriptArray.map((sentence, index) => {
+                const keywords = sentence.toLowerCase().split(' ').filter(word => 
+                    !['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'].includes(word)
+                );
+                
+                const creativePrompts = [
+                    `Epic cinematic scene: ${sentence}, dramatic lighting, 8K ultra-realistic, motivational atmosphere, vertical orientation`,
+                    `Creative motivational image: ${sentence}, featuring ${keywords.slice(0, 3).join(', ')}, dramatic lighting, 8K ultra-realistic, cinematic composition, vertical orientation`,
+                    `Inspirational visual: ${sentence}, powerful imagery, professional photography, 8K quality, vertical format`,
+                    `Motivational masterpiece: ${sentence}, cinematic style, dramatic shadows, 8K resolution, vertical orientation`,
+                    `Epic motivational scene: ${sentence}, inspiring composition, professional quality, 8K ultra-realistic, vertical format`,
+                    `Creative inspirational image: ${sentence}, dramatic lighting, cinematic style, 8K quality, vertical orientation`
+                ];
+                
+                const keywordPrompt = keywords.length > 0 ? 
+                    `Creative motivational image: ${sentence}, featuring ${keywords.slice(0, 3).join(', ')}, dramatic lighting, 8K ultra-realistic, cinematic composition, vertical orientation` :
+                    creativePrompts[index] || creativePrompts[0];
+                
+                return keywordPrompt;
+            });
+        };
         
         // Generate music prompt
-        const musicPrompt = `Epic cinematic background music, piano + orchestral strings + powerful drums, motivational build-up, climax at 30-40 seconds, emotional and inspiring, 120 BPM, professional quality`;
+        const generateMusicPrompt = (title) => {
+            const theme = title.toLowerCase().replace(/\s+/g, '');
+            const musicPrompts = {
+                'discipline': 'Calm motivational background music, piano and strings, inspiring and uplifting, 45 seconds',
+                'success': 'Epic cinematic music, building to climax, motivational and powerful, 45 seconds',
+                'motivation': 'Uplifting background music, piano and orchestral, inspiring and energetic, 45 seconds',
+                'hustle': 'Energetic motivational music, drums and bass, driving and powerful, 45 seconds',
+                'mindset': 'Calm and focused background music, ambient and inspiring, 45 seconds',
+                'grind': 'Intense motivational music, building energy, powerful and driving, 45 seconds',
+                'fear': 'Overcoming fear music, building from calm to powerful, inspiring and uplifting, 45 seconds',
+                'courage': 'Brave and bold music, orchestral and inspiring, building to triumph, 45 seconds',
+                'failure': 'Rising from failure music, building from low to high, inspiring and hopeful, 45 seconds',
+                'consistency': 'Steady and reliable music, consistent rhythm, motivational and persistent, 45 seconds',
+                'legacy': 'Epic and grand music, orchestral and inspiring, building to greatness, 45 seconds',
+                'money': 'Success and wealth music, confident and powerful, building to prosperity, 45 seconds',
+                'time': 'Time management music, focused and efficient, motivational and productive, 45 seconds',
+                'health': 'Healthy and energetic music, uplifting and positive, inspiring wellness, 45 seconds',
+                'focus': 'Concentrated and focused music, minimal distractions, motivational and clear, 45 seconds',
+                'resilience': 'Strong and unbreakable music, building resilience, powerful and enduring, 45 seconds'
+            };
+            return musicPrompts[theme] || 'Calm motivational background music, piano and strings, inspiring and uplifting, 45 seconds';
+        };
         
         // Generate SEO tags
-        const seoTags = [
-            'motivation', 'mindset', 'success', 'discipline', 'hustle',
-            'inspiration', 'growth', 'achievement', 'goals', 'mindset'
-        ];
+        const generateSEOTags = (data) => {
+            const baseTags = ['motivation', 'mindset', 'success', 'discipline', 'hustle', 'grind', 'inspiration', 'selfimprovement', 'goals', 'achievement'];
+            const keywordTags = data.keywords || [];
+            const titleWords = jsonData.title.toLowerCase().split(' ').filter(word => word.length > 3);
+            return [...new Set([...baseTags, ...keywordTags, ...titleWords])].slice(0, 10);
+        };
         
         // Generate voice settings
-        const voiceSettings = {
-            gender: jsonData.voiceSettings?.gender || 'male',
-            tone: jsonData.voiceSettings?.tone || 'deep',
-            pace: "8 seconds per sentence with 0.5s pause",
-            accent: "American English",
-            emphasis: "Key motivational words"
+        const generateVoiceSettings = (gender = 'male', tone = 'deep') => {
+            const voices = {
+                male: {
+                    deep: { gender: 'male', tone: 'deep', pace: 'slow', accent: 'american', emphasis: 'strong' },
+                    energetic: { gender: 'male', tone: 'energetic', pace: 'medium', accent: 'american', emphasis: 'dynamic' },
+                    inspiring: { gender: 'male', tone: 'inspiring', pace: 'medium', accent: 'american', emphasis: 'motivational' }
+                },
+                female: {
+                    deep: { gender: 'female', tone: 'deep', pace: 'slow', accent: 'american', emphasis: 'strong' },
+                    energetic: { gender: 'female', tone: 'energetic', pace: 'medium', accent: 'american', emphasis: 'dynamic' },
+                    inspiring: { gender: 'female', tone: 'inspiring', pace: 'medium', accent: 'american', emphasis: 'motivational' }
+                }
+            };
+            return voices[gender]?.[tone] || voices.male.deep;
         };
         
         const enhancedContent = {
             title: jsonData.title,
             script: script,
-            imagePrompts: imagePrompts,
-            musicPrompt: musicPrompt,
-            seoTags: seoTags,
-            voiceSettings: voiceSettings,
+            imagePrompts: generateImagePrompts(script),
+            musicPrompt: generateMusicPrompt(jsonData.title.toLowerCase().replace(/\s+/g, '')),
+            seoTags: generateSEOTags({ keywords: jsonData.keywords || [jsonData.title.toLowerCase()] }),
+            voiceSettings: generateVoiceSettings(jsonData.voiceSettings?.gender || 'male', jsonData.voiceSettings?.tone || 'deep'),
             originalData: jsonData,
             enhanced: true
         };
@@ -99,6 +131,7 @@ exports.handler = async (event, context) => {
                 content: enhancedContent
             })
         };
+        
     } catch (error) {
         console.error('Error:', error);
         return {

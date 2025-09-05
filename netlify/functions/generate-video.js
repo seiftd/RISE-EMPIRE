@@ -1,4 +1,4 @@
-const { RiseEmpireGenerator } = require('../../rise-empire-backend');
+const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
     // Enable CORS
@@ -27,36 +27,30 @@ exports.handler = async (event, context) => {
     try {
         const { theme, content, images, music, voice } = JSON.parse(event.body);
         
-        const generator = new RiseEmpireGenerator();
+        // For Netlify, we'll return the processed content and prompts
+        // The actual video generation will need to be done client-side or with a different service
         
-        let result;
-        if (content && images && music && voice) {
-            result = await generator.createVideoFromAssets(content, images, music, voice);
-        } else {
-            result = await generator.generateCompleteVideo(theme);
-        }
+        const result = {
+            success: true,
+            message: "Content processed successfully. Video generation requires server-side processing.",
+            content: content,
+            images: images,
+            music: music,
+            voice: voice,
+            videoUrl: null, // Will be null for Netlify deployment
+            assets: {
+                images: images || [],
+                music: music || null,
+                voice: voice || null
+            }
+        };
         
-        if (result.success) {
-            return {
-                statusCode: 200,
-                headers,
-                body: JSON.stringify({
-                    success: true,
-                    video: result.video,
-                    assets: result.assets,
-                    content: result.content
-                })
-            };
-        } else {
-            return {
-                statusCode: 500,
-                headers,
-                body: JSON.stringify({
-                    success: false,
-                    error: result.error
-                })
-            };
-        }
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+        };
+        
     } catch (error) {
         console.error('Error:', error);
         return {
