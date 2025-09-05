@@ -3628,14 +3628,28 @@ Your motivational empire starts here! 🏆
                 if (response.ok) {
                     const result = await response.json();
                     console.log('Backend response:', result);
+                    console.log('Video object:', result.video);
+                    console.log('Video data:', result.video?.data);
                     if (result.success && result.video && result.video.data) {
+                        const videoTitle = result.video.data.title || 'Generated Video';
                         return {
-                            videoUrl: `/api/download/${result.video.data.title.replace(/[^a-zA-Z0-9]/g, '-')}.mp4`,
+                            videoUrl: `/api/download/${videoTitle.replace(/[^a-zA-Z0-9]/g, '-')}.mp4`,
                             data: result.video.data,
                             real: true
                         };
                     } else {
-                        throw new Error(result.error || 'Backend video creation failed');
+                        // Fallback: try to create video object with available data
+                        console.log('Video data not found, using fallback');
+                        if (result.success && result.video) {
+                            const videoTitle = result.video.data?.title || result.video.title || 'Generated Video';
+                            return {
+                                videoUrl: `/api/download/${videoTitle.replace(/[^a-zA-Z0-9]/g, '-')}.mp4`,
+                                data: result.video.data || { title: videoTitle },
+                                real: true
+                            };
+                        } else {
+                            throw new Error(result.error || 'Backend video creation failed');
+                        }
                     }
                 } else {
                     const errorText = await response.text();
